@@ -2,8 +2,8 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>國小1200單字冒險：記憶之梯 (VocabQuest: Memory Ladder 60關篇)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>國小1200單字冒險：記憶之梯 (獨立多暱稱 & iPad雙人對抗版)</title>
   <style>
     :root {
       --bg-dark: #0d1117;
@@ -16,6 +16,7 @@
       --green: #10b981;
       --red: #ef4444;
       --purple: #8b5cf6;
+      --blue: #3b82f6;
       --text-main: #f3f4f6;
       --text-muted: #9ca3af;
     }
@@ -25,22 +26,27 @@
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, "Microsoft JhengHei", sans-serif;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      user-select: none;
     }
 
     body {
       background-color: var(--bg-dark);
       color: var(--text-main);
       min-height: 100vh;
+      min-height: -webkit-fill-available;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 16px;
+      padding: 12px;
       overflow-x: hidden;
     }
 
     .game-container {
       width: 100%;
-      max-width: 920px;
+      max-width: 960px;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 16px;
@@ -49,14 +55,16 @@
       display: flex;
       flex-direction: column;
       position: relative;
+      min-height: 85vh;
     }
 
     /* Screen Management */
     .screen {
       display: none;
-      padding: 24px;
+      padding: 20px;
       flex-direction: column;
-      animation: fadeIn 0.3s ease-in-out;
+      animation: fadeIn 0.25s ease-in-out;
+      flex: 1;
     }
 
     .screen.active {
@@ -64,7 +72,7 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
+      from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -74,54 +82,45 @@
     }
 
     h1 {
-      font-size: 2rem;
+      font-size: 1.85rem;
       color: var(--gold);
       text-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .subtitle {
       text-align: center;
       color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 24px;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
     }
 
+    /* iPad Optimized Buttons */
     .btn {
       background: linear-gradient(135deg, #1f2937, #374151);
       color: var(--text-main);
       border: 1px solid var(--border-color);
-      padding: 12px 20px;
-      font-size: 1rem;
+      padding: 14px 20px;
+      font-size: 1.05rem;
       font-weight: 600;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      user-select: none;
-    }
-
-    .btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      border-color: var(--cyan);
+      min-height: 48px;
     }
 
     .btn:active:not(:disabled) {
-      transform: translateY(0);
+      transform: scale(0.98);
+      filter: brightness(1.2);
     }
 
     .btn-primary {
       background: linear-gradient(135deg, #2563eb, #1d4ed8);
       border-color: #3b82f6;
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-      box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
     }
 
     .btn-gold {
@@ -130,61 +129,53 @@
       color: #fff;
     }
 
-    .btn-gold:hover:not(:disabled) {
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
-    }
-
-    .btn-success {
-      background: linear-gradient(135deg, #059669, #047857);
-      border-color: var(--green);
-    }
-
     .btn-danger {
       background: linear-gradient(135deg, #dc2626, #991b1b);
       border-color: var(--red);
     }
 
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      min-height: 36px;
+    }
+
     .btn:disabled {
-      opacity: 0.5;
+      opacity: 0.4;
       cursor: not-allowed;
     }
 
-    /* Auth Screen */
-    .auth-box {
-      max-width: 420px;
-      margin: 40px auto;
-      background: var(--bg-panel);
-      padding: 30px;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-      text-align: center;
+    /* Top Utility Bar */
+    .top-utility-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      background: #111827;
+      border-bottom: 1px solid var(--border-color);
     }
 
-    .input-field {
-      width: 100%;
-      padding: 12px 16px;
-      background: #0d1117;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      color: #fff;
-      font-size: 1rem;
-      margin-bottom: 16px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .input-field:focus {
-      border-color: var(--cyan);
-      box-shadow: 0 0 8px rgba(6, 182, 212, 0.3);
+    .current-user-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: var(--cyan);
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.3);
     }
 
     /* Top HUD Bar */
     .hud-bar {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 12px;
+      gap: 10px;
       background: var(--bg-panel);
-      padding: 14px 18px;
+      padding: 12px 16px;
       border-bottom: 1px solid var(--border-color);
       border-radius: 12px 12px 0 0;
     }
@@ -221,35 +212,33 @@
     .fill-san { background: linear-gradient(90deg, #8b5cf6, #c084fc); }
     .fill-stage { background: linear-gradient(90deg, #10b981, #34d399); }
 
-    /* Memory Ladder Display Component */
+    /* Memory Ladder Widget */
     .memory-ladder-widget {
       background: #111827;
       border: 1px solid #374151;
       border-radius: 10px;
-      padding: 12px;
-      margin: 12px 0;
-      position: relative;
+      padding: 10px 12px;
+      margin: 10px 0;
     }
 
     .ladder-steps {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
       justify-content: space-between;
-      margin-top: 8px;
+      margin-top: 6px;
     }
 
     .ladder-step {
       flex: 1;
-      padding: 8px 4px;
+      padding: 6px 2px;
       background: #1f2937;
       border: 1px solid #374151;
       border-radius: 6px;
       text-align: center;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: #9ca3af;
       transition: all 0.3s;
-      position: relative;
     }
 
     .ladder-step.active {
@@ -268,7 +257,7 @@
     }
 
     .ladder-title {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 700;
       color: var(--gold);
       display: flex;
@@ -280,50 +269,49 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 16px;
+      padding: 14px;
       background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
       border: 1px solid var(--border-color);
       border-radius: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       position: relative;
     }
 
     .monster-avatar {
-      font-size: 3.5rem;
+      font-size: 3.2rem;
       filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.4));
-      margin-bottom: 6px;
-      transition: transform 0.2s;
+      margin-bottom: 4px;
     }
 
     .monster-name {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 700;
       color: #fca5a5;
     }
 
     .monster-sub {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .monster-hp-bar {
-      width: 280px;
+      width: 260px;
       height: 10px;
       background: #4b5563;
       border-radius: 5px;
       overflow: hidden;
     }
 
-    /* Word Card */
+    /* Word Prompt Card */
     .word-prompt-card {
       background: var(--bg-panel);
       border: 2px solid var(--cyan);
       box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
       border-radius: 12px;
-      padding: 20px;
+      padding: 16px;
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .prompt-word {
@@ -331,20 +319,20 @@
       font-weight: 800;
       letter-spacing: 1px;
       color: #38bdf8;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .prompt-phonetic {
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: var(--text-muted);
       font-family: monospace;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .prompt-sentence {
-      font-size: 1.05rem;
+      font-size: 1rem;
       color: #e2e8f0;
-      line-height: 1.5;
+      line-height: 1.4;
       font-style: italic;
     }
 
@@ -354,12 +342,12 @@
       text-decoration: underline;
     }
 
-    /* Options Grid */
+    /* Options Grid (Optimized for iPad touch reach) */
     .options-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     @media (max-width: 600px) {
@@ -370,19 +358,20 @@
       background: #1f2937;
       border: 1px solid #374151;
       padding: 16px;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       border-radius: 10px;
       color: #fff;
       cursor: pointer;
       text-align: left;
-      transition: all 0.2s;
-      position: relative;
+      transition: all 0.15s;
+      min-height: 58px;
+      display: flex;
+      align-items: center;
     }
 
-    .option-btn:hover:not(:disabled) {
+    .option-btn:active:not(:disabled) {
+      transform: scale(0.97);
       background: #374151;
-      border-color: var(--cyan);
-      transform: translateX(4px);
     }
 
     .option-btn.correct {
@@ -402,51 +391,139 @@
       pointer-events: none;
     }
 
-    /* Action & Skills Bar */
+    /* Skills Bar */
     .skills-bar {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       justify-content: center;
       flex-wrap: wrap;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .skill-btn {
-      padding: 8px 14px;
+      padding: 8px 12px;
       font-size: 0.85rem;
-      border-radius: 6px;
+      border-radius: 8px;
       background: #111827;
       border: 1px solid var(--border-color);
       color: #d1d5db;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      min-height: 40px;
     }
 
-    .skill-btn:hover:not(:disabled) {
-      border-color: var(--gold);
-      color: #fff;
-    }
-
-    /* Log Panel */
     .combat-log {
       background: #090d13;
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 0.85rem;
-      height: 70px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      height: 60px;
       overflow-y: auto;
       font-family: monospace;
       color: #9ca3af;
     }
 
-    .log-entry { margin-bottom: 4px; }
+    .log-entry { margin-bottom: 3px; }
     .log-success { color: #34d399; }
     .log-danger { color: #f87171; }
     .log-info { color: #38bdf8; }
     .log-gold { color: #fbbf24; }
+
+    /* =========================================================================
+       iPad 雙人同屏對決模式樣式 (1v1 Dual Arena)
+       ========================================================================= */
+    .dual-arena {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      flex: 1;
+      gap: 12px;
+    }
+
+    .dual-arena-header {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      background: var(--bg-panel);
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      gap: 12px;
+    }
+
+    .player-corner {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .player-corner.blue { text-align: left; }
+    .player-corner.red { text-align: right; }
+
+    .dual-prompt-box {
+      background: radial-gradient(circle at center, #1e293b, #0f172a);
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .dual-panels-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      flex: 1;
+    }
+
+    @media (max-width: 650px) {
+      .dual-panels-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dual-player-deck {
+      background: var(--bg-panel);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      border: 2px solid transparent;
+    }
+
+    .dual-player-deck.blue {
+      border-color: #3b82f6;
+      background: linear-gradient(180deg, #1e3a8a15, #161b22);
+    }
+
+    .dual-player-deck.red {
+      border-color: #ef4444;
+      background: linear-gradient(180deg, #7f1d1d15, #161b22);
+    }
+
+    .dual-options-column {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .dual-opt-btn {
+      padding: 14px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: #1f2937;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     /* Modals & Overlays */
     .modal-overlay {
@@ -470,22 +547,18 @@
       background: var(--bg-card);
       border: 2px solid var(--border-color);
       border-radius: 14px;
-      max-width: 550px;
+      max-width: 580px;
       width: 100%;
-      padding: 26px;
+      padding: 24px;
       box-shadow: 0 15px 40px rgba(0,0,0,0.9);
-      animation: modalPop 0.3s ease;
+      animation: modalPop 0.25s ease;
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     @keyframes modalPop {
-      from { transform: scale(0.9); opacity: 0; }
+      from { transform: scale(0.92); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
-    }
-
-    .gameover-card {
-      border-color: var(--red);
-      background: radial-gradient(circle at top, #2b1115, #161b22);
-      text-align: center;
     }
 
     .victory-card {
@@ -494,40 +567,10 @@
       text-align: center;
     }
 
-    .gameover-title {
-      font-size: 2.2rem;
-      color: var(--red);
-      text-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
-      margin-bottom: 12px;
-    }
-
-    .victory-title {
-      font-size: 2.2rem;
-      color: #34d399;
-      text-shadow: 0 0 15px rgba(52, 211, 153, 0.6);
-      margin-bottom: 12px;
-    }
-
-    .gameover-epitaph {
-      font-style: italic;
-      color: #fca5a5;
-      font-size: 1rem;
-      margin-bottom: 20px;
-      line-height: 1.6;
-      border-left: 3px solid var(--red);
-      padding-left: 12px;
-      text-align: left;
-    }
-
-    .victory-desc {
-      font-style: italic;
-      color: #a7f3d0;
-      font-size: 1rem;
-      margin-bottom: 20px;
-      line-height: 1.6;
-      border-left: 3px solid var(--green);
-      padding-left: 12px;
-      text-align: left;
+    .gameover-card {
+      border-color: var(--red);
+      background: radial-gradient(circle at top, #2b1115, #161b22);
+      text-align: center;
     }
 
     .stars-display {
@@ -538,7 +581,7 @@
 
     .stats-summary-table {
       width: 100%;
-      margin: 16px 0;
+      margin: 14px 0;
       border-collapse: collapse;
       font-size: 0.95rem;
     }
@@ -554,86 +597,49 @@
       color: var(--gold);
     }
 
-    /* Stage Select Grid */
+    /* Stage Map Grid */
     .stage-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+      gap: 10px;
       max-height: 380px;
       overflow-y: auto;
-      padding: 6px;
-      margin: 16px 0;
+      padding: 4px;
+      margin: 14px 0;
     }
 
     .stage-card {
       background: var(--bg-panel);
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      padding: 12px 8px;
+      padding: 10px 6px;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
-      position: relative;
     }
 
-    .stage-card:hover:not(.locked) {
-      border-color: var(--cyan);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
-    }
-
-    .stage-card.cleared {
-      border-color: var(--green);
-      background: #064e3b22;
-    }
-
-    .stage-card.current {
-      border-color: var(--gold);
-      background: #78350f22;
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
-    }
-
-    .stage-card.locked {
-      opacity: 0.4;
-      cursor: not-allowed;
-      background: #111827;
-    }
-
-    .stage-num {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .stage-stars {
-      color: var(--gold);
-      font-size: 0.85rem;
-      margin-top: 4px;
-    }
-
-    .stage-words-tag {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
+    .stage-card:active:not(.locked) { transform: scale(0.95); }
+    .stage-card.cleared { border-color: var(--green); background: #064e3b22; }
+    .stage-card.current { border-color: var(--gold); background: #78350f22; box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+    .stage-card.locked { opacity: 0.4; cursor: not-allowed; background: #111827; }
 
     .world-tabs {
       display: flex;
       gap: 6px;
       overflow-x: auto;
-      padding-bottom: 8px;
-      margin-bottom: 12px;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
     }
 
     .world-tab-btn {
-      padding: 6px 14px;
+      padding: 6px 12px;
       background: var(--bg-panel);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
       border-radius: 6px;
       cursor: pointer;
       white-space: nowrap;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
     }
 
     .world-tab-btn.active {
@@ -643,11 +649,26 @@
       font-weight: 600;
     }
 
-    /* Grimoire Table */
+    /* Saved Profile Slots */
+    .profile-slot-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1f2937;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 8px;
+    }
+
+    .profile-slot-card:hover {
+      border-color: var(--cyan);
+    }
+
     .table-container {
-      max-height: 380px;
+      max-height: 360px;
       overflow-y: auto;
-      margin: 16px 0;
+      margin: 14px 0;
       border: 1px solid var(--border-color);
       border-radius: 8px;
     }
@@ -655,131 +676,153 @@
     table.data-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       text-align: left;
     }
 
     table.data-table th {
       background: var(--bg-panel);
-      padding: 10px;
+      padding: 8px 10px;
       color: var(--text-muted);
       position: sticky;
       top: 0;
     }
 
     table.data-table td {
-      padding: 10px;
+      padding: 8px 10px;
       border-bottom: 1px solid var(--border-color);
-    }
-
-    table.data-table tr:hover {
-      background: rgba(255,255,255,0.03);
     }
 
     .badge {
       display: inline-block;
-      padding: 2px 8px;
+      padding: 2px 6px;
       border-radius: 4px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 600;
     }
-
     .badge-gold { background: #78350f; color: #fef08a; border: 1px solid #d97706; }
     .badge-cyan { background: #164e63; color: #a5f3fc; border: 1px solid #0891b2; }
     .badge-purple { background: #581c87; color: #e9d5ff; border: 1px solid #7e22ce; }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-6px); }
-      40%, 80% { transform: translateX(6px); }
-    }
-    .shake-anim { animation: shake 0.4s ease; }
-
-    .sound-toggle {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
   </style>
 </head>
 <body>
 
 <div class="game-container">
-  <button class="sound-toggle" id="soundToggle" title="切換音效">🔊</button>
+  <!-- 頂端導航條 -->
+  <div class="top-utility-bar">
+    <div class="current-user-badge" id="btnSwitchUserTop" title="切換其他勇者身分">
+      <span>👤 當前勇者：</span>
+      <strong id="topBarNickname" style="color:#fff;">未登入</strong>
+      <span style="font-size: 0.75rem; color: #9ca3af;">(切換身分)</span>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <button class="sound-toggle" id="soundToggle" style="background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;" title="音效開關">🔊</button>
+    </div>
+  </div>
 
-  <!-- SCREEN 1: 登入 / 身份確認 -->
+  <!-- SCREEN 1: 登入 / 建立勇者 (嚴格獨立存檔) -->
   <div id="screenAuth" class="screen active">
     <h1>國小 1200 單字迷宮</h1>
-    <div class="subtitle">教育部課綱 1200 基本英語字彙 · 60 關分段記憶階梯篇</div>
+    <div class="subtitle">教育部課綱 1200 基本英語字彙 · 獨立多玩家存檔篇</div>
 
-    <div class="auth-box">
-      <div style="font-size: 3rem; margin-bottom: 12px;">🛡️🗺️✨</div>
-      <h3 style="margin-bottom: 12px; color: #38bdf8;">輸入見習勇者暱稱</h3>
-      <p style="font-size: 0.85rem; color: #9ca3af; margin-bottom: 20px;">
-        每關 20 個單字循序漸進，自動保存通關進度與星級！
+    <div style="max-width: 460px; margin: 15px auto; padding: 24px; background: var(--bg-panel); border-radius: 12px; border: 1px solid var(--border-color); text-align: center;">
+      <div style="font-size: 3rem; margin-bottom: 8px;">🛡️👤✨</div>
+      <h3 style="margin-bottom: 6px; color: #38bdf8;">輸入勇者暱稱</h3>
+      <p style="font-size: 0.85rem; color: #9ca3af; margin-bottom: 16px; line-height: 1.5;">
+        ⚠️ <strong>存檔完全獨立規則</strong>：<br>
+        輸入<strong>全新暱稱</strong>，將<strong>從第 1 關全新開始</strong>！<br>
+        輸入<strong>已有暱稱</strong>，則<strong>讀取該勇者專屬歷史進度</strong>。
       </p>
-      <input type="text" id="nicknameInput" class="input-field" placeholder="例如：文字冒險者" maxlength="12">
-      <button class="btn btn-primary" style="width: 100%;" id="btnEnterGame">踏入記憶迷宮</button>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+        <input type="text" id="nicknameInput" style="flex:1; padding: 12px 14px; background: #0d1117; border: 1px solid var(--border-color); border-radius: 8px; color: #fff; font-size: 1rem; outline: none;" placeholder="輸入暱稱 (例如：0908 或 小明)" maxlength="12">
+        <button class="btn btn-primary" id="btnEnterGame" style="white-space: nowrap;">進入遊戲</button>
+      </div>
+
+      <!-- 已存檔名冊 (點擊直接切換) -->
+      <div id="savedAccountsContainer" style="text-align: left; margin-top: 20px;">
+        <div style="font-size: 0.82rem; color: var(--gold); font-weight: 700; margin-bottom: 8px;">
+          📜 本機已保存的勇者存檔 (點擊繼續)：
+        </div>
+        <div id="savedAccountsList" style="max-height: 220px; overflow-y: auto;">
+          <!-- Populated by JS -->
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- SCREEN 2: 主選單 -->
   <div id="screenMenu" class="screen">
     <h1>記憶殿堂</h1>
-    <div class="subtitle">勇者身分：<span id="menuPlayerName" style="color: var(--cyan); font-weight: 700;"></span></div>
+    <div class="subtitle">
+      當前勇者：<span id="menuPlayerName" style="color: var(--cyan); font-weight: 700; font-size: 1.1rem;"></span>
+      <span style="font-size: 0.8rem; color: #a7f3d0; margin-left: 6px;">(專屬獨立存檔)</span>
+    </div>
 
-    <!-- 冒險進度看板 (Progress Dashboard) -->
-    <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #3b82f6; border-radius: 12px; padding: 18px; margin-bottom: 20px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <span style="font-size: 0.9rem; color: #93c5fd; font-weight: 600;">🗺️ 冒險總進度 (60關挑戰)</span>
-        <span id="menuProgressText" style="font-size: 1rem; font-weight: 700; color: var(--gold);">已解鎖至 第 1 關 / 60 關</span>
+    <!-- 冒險進度看板 -->
+    <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #3b82f6; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <span style="font-size: 0.85rem; color: #93c5fd; font-weight: 600;">🗺️ 冒險總進度 (60關挑戰)</span>
+        <span id="menuProgressText" style="font-size: 0.95rem; font-weight: 700; color: var(--gold);">已解鎖至 第 1 關</span>
       </div>
-      <div class="progress-bar-bg" style="height: 12px;">
+      <div class="progress-bar-bg" style="height: 10px;">
         <div id="menuProgressBar" class="progress-bar-fill fill-stage" style="width: 1.6%;"></div>
       </div>
-      <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.8rem; color: var(--text-muted);">
+      <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.78rem; color: var(--text-muted);">
         <span id="menuTotalStars">獲得總星數：⭐ 0 / 180</span>
-        <span id="menuMasteredCount">已登頂精通單字：0 字</span>
+        <span id="menuMasteredCount">階梯5精通單字：0 字</span>
       </div>
     </div>
 
-    <!-- 角色資訊卡 -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px;">
-      <div style="background: var(--bg-panel); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
-        <div style="font-size: 0.8rem; color: var(--text-muted);">角色階級型態</div>
-        <div id="menuPlayerTitle" style="font-size: 1.2rem; font-weight: 700; color: var(--gold); margin: 6px 0;">流浪學徒</div>
-        <div style="font-size: 0.8rem; color: #a5f3fc;" id="menuPlayerBonus">基礎被動：專注力穩定</div>
-      </div>
-      <div style="background: var(--bg-panel); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
-        <div style="font-size: 0.8rem; color: var(--text-muted);">歷史最高榮譽 / 今日分數</div>
-        <div style="font-size: 1.2rem; font-weight: 700; color: #34d399; margin: 6px 0;">
-          <span id="menuHighScore">0</span> / <span id="menuDailyScore">0</span>
+    <!-- 雙模式選擇區 -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px;">
+      <!-- 單人闖關 -->
+      <div style="background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; color:#fff;">🛡️ 英雄單人冒險</div>
+          <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 12px;">
+            每關 20 個單字循序闖關，攀爬記憶階梯、解鎖 60 道關卡與星級勳章！
+          </div>
         </div>
-        <div style="font-size: 0.8rem; color: var(--text-muted);">累積通關：<span id="menuClearedCount" style="color: #fff; font-weight:700;">0</span> 關</div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button class="btn btn-gold" id="btnResumeNextStage" style="width: 100%;">
+            ▶️ 繼續闖關 (<span id="btnResumeStageLabel">第 1 關</span>)
+          </button>
+          <button class="btn btn-primary" id="btnOpenStageMap" style="width: 100%; font-size: 0.9rem; padding: 10px;">
+            🗺️ 選擇 60 關地圖
+          </button>
+        </div>
+      </div>
+
+      <!-- iPad 雙人對決 -->
+      <div style="background: radial-gradient(circle at top, #2e1065, #161b22); border: 1px solid #a855f7; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; color: #f0abfc;">⚔️ iPad 雙人同屏 PK</div>
+          <div style="font-size: 0.82rem; color: #e9d5ff; line-height: 1.4; margin-bottom: 12px;">
+            兩人共用一臺 iPad 面對面搶答！答對發動攻擊、答錯失分，看誰單字反應更快！
+          </div>
+        </div>
+        <button class="btn btn-gold" id="btnStartDualPK" style="width: 100%; background: linear-gradient(135deg, #7e22ce, #a855f7); border-color: #c084fc;">
+          ⚡ 開啟雙人搶答對決
+        </button>
       </div>
     </div>
 
-    <!-- 主選單導航群 -->
-    <div style="display: flex; flex-direction: column; gap: 12px; max-width: 480px; margin: 0 auto; width: 100%;">
-      <button class="btn btn-gold" style="font-size: 1.15rem; padding: 16px;" id="btnResumeNextStage">
-        ▶️ 繼續闖關 (<span id="btnResumeStageLabel">第 1 關</span>)
+    <!-- 輔助選單 -->
+    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px;">
+      <button class="btn" id="btnOpenGrimoire" style="font-size: 0.9rem; padding: 10px 16px;">📖 記憶魔典</button>
+      <button class="btn" id="btnOpenLeaderboard" style="font-size: 0.9rem; padding: 10px 16px;">🏆 勇者排行榜</button>
+      <button class="btn" id="btnOpenAchievements" style="font-size: 0.9rem; padding: 10px 16px;">🎖️ 稱號成就</button>
+    </div>
+
+    <div style="text-align: center;">
+      <button class="btn btn-danger" style="font-size: 0.85rem; padding: 8px 18px; min-height: 36px;" id="btnSwitchUserBottom">
+        🔄 切換其他勇者 / 重新建立暱稱
       </button>
-      <button class="btn btn-primary" id="btnOpenStageMap">
-        🗺️ 冒險地圖 (選擇 60 關挑戰)
-      </button>
-      <button class="btn" id="btnOpenGrimoire">📖 記憶魔典 (1200 單字階梯庫)</button>
-      <button class="btn" id="btnOpenLeaderboard">🏆 世界排行榜</button>
-      <button class="btn" id="btnOpenAchievements">🎖️ 冒險稱號與成就</button>
-      <button class="btn btn-danger" style="margin-top: 6px; font-size: 0.85rem;" id="btnSwitchUser">🔄 切換身分</button>
     </div>
   </div>
 
-  <!-- SCREEN 3: 核心遊戲循環 (戰鬥與事件) -->
+  <!-- SCREEN 3: 核心單人闖關畫面 -->
   <div id="screenGame" class="screen">
     <!-- Top HUD -->
     <div class="hud-bar">
@@ -819,12 +862,12 @@
           <span id="hudGoldText" style="color: var(--gold); font-weight: 700;">100</span>
         </div>
         <div style="font-size: 0.85rem; color: var(--cyan); font-weight: 600;" id="hudStageText">
-          第 1 關：生字啟航
+          第 1 關 · 20字階梯
         </div>
       </div>
     </div>
 
-    <!-- 記憶階梯進度顯示 (Memory Ladder Core Widget) -->
+    <!-- 記憶階梯顯示 -->
     <div class="memory-ladder-widget">
       <div class="ladder-title">
         <span>🪜 當前單字記憶階梯 (Memory Ladder)</span>
@@ -832,24 +875,19 @@
       </div>
       <div class="ladder-steps">
         <div class="ladder-step active" id="step1">
-          <div>階梯 1</div>
-          <div>生疏探索</div>
+          <div>階梯 1</div><div>生疏探索</div>
         </div>
         <div class="ladder-step" id="step2">
-          <div>階梯 2</div>
-          <div>反覆見習</div>
+          <div>階梯 2</div><div>反覆見習</div>
         </div>
         <div class="ladder-step" id="step3">
-          <div>階梯 3</div>
-          <div>脈絡掌握</div>
+          <div>階梯 3</div><div>脈絡掌握</div>
         </div>
         <div class="ladder-step" id="step4">
-          <div>階梯 4</div>
-          <div>賢者直覺</div>
+          <div>階梯 4</div><div>賢者直覺</div>
         </div>
         <div class="ladder-step" id="step5">
-          <div>階梯 5</div>
-          <div>永恆封印 👑</div>
+          <div>階梯 5</div><div>永恆封印 👑</div>
         </div>
       </div>
     </div>
@@ -858,13 +896,13 @@
     <div class="battle-stage" id="battleStage">
       <div class="monster-avatar" id="monsterAvatar">🐺</div>
       <div class="monster-name" id="monsterName">暗夜噬詞狼</div>
-      <div class="monster-sub" id="monsterDesc">它以忘卻為糧食，正在撕裂你的詞彙符文！</div>
+      <div class="monster-sub" id="monsterDesc">它正在吞食你的詞彙符文！</div>
       <div class="monster-hp-bar">
         <div id="monsterHpFill" style="height: 100%; background: linear-gradient(90deg, #f87171, #ef4444); width: 100%; transition: width 0.2s;"></div>
       </div>
     </div>
 
-    <!-- 題目區域 -->
+    <!-- 題卡區域 -->
     <div class="word-prompt-card">
       <div class="prompt-word" id="promptWord">afraid</div>
       <div class="prompt-phonetic" id="promptPhonetic">[əˈfreɪd] · adj.</div>
@@ -874,245 +912,211 @@
       </div>
     </div>
 
-    <!-- 選項按鈕組 -->
-    <div class="options-grid" id="optionsGrid">
-      <!-- Generated Dynamically -->
-    </div>
+    <!-- 選項按鈕 (支援觸控高命中) -->
+    <div class="options-grid" id="optionsGrid"></div>
 
-    <!-- 專屬武器技能與道具欄 -->
+    <!-- 技能欄 -->
     <div class="skills-bar">
-      <button class="skill-btn" id="btnSkillErase" title="消耗 15 SAN 排除兩個錯誤選項">
-        ✒️ 符文抹除 (消耗 15 SAN)
-      </button>
-      <button class="skill-btn" id="btnSkillHeal" title="消耗 25 金幣喝下甘泉恢復 35 HP">
-        🧪 甘泉治療 (消耗 25 金幣)
-      </button>
-      <button class="skill-btn" id="btnSkillFocus" title="消耗 20 金幣冷靜精神恢復 30 SAN">
-        🕯️ 凝神熏香 (消耗 20 金幣)
-      </button>
-      <button class="skill-btn" id="btnFleeStage" style="border-color: #ef4444;" title="撤退回主選單">
-        🏃 暫停撤退
-      </button>
+      <button class="skill-btn" id="btnSkillErase">✒️ 符文抹除 (-15 SAN)</button>
+      <button class="skill-btn" id="btnSkillHeal">🧪 甘泉治療 (-25 金幣)</button>
+      <button class="skill-btn" id="btnSkillFocus">🕯️ 凝神熏香 (-20 金幣)</button>
+      <button class="skill-btn" id="btnFleeStage" style="border-color: #ef4444;">🏃 撤退</button>
     </div>
 
-    <!-- 戰鬥紀錄 Log -->
     <div class="combat-log" id="combatLog">
       <div class="log-entry log-info">> 踏入關卡，魔物已現身。請選出正確的語意符文！</div>
     </div>
   </div>
 
-  <!-- SCREEN 4: 隨機奇遇事件 -->
-  <div id="screenEvent" class="screen">
-    <h2 style="color: var(--purple); margin-bottom: 8px;" id="eventTitle">🔮 迷宮中的古老聖壇</h2>
-    <div class="subtitle" id="eventSubtitle">你在前進的岔路口發現了神秘的光芒。</div>
+  <!-- SCREEN 4: iPad 雙人同屏 PK 畫面 -->
+  <div id="screenDual" class="screen">
+    <div class="dual-arena">
+      <div class="dual-arena-header">
+        <div class="player-corner blue">
+          <div style="font-weight:700; color:#60a5fa;" id="dualP1Name">🔵 藍隊勇者</div>
+          <div style="font-size:0.8rem; color:#9ca3af;">城堡生命：<span id="dualP1Hp" style="color:#60a5fa; font-weight:700;">100</span> HP</div>
+          <div class="progress-bar-bg" style="width: 100px;">
+            <div id="dualP1HpBar" class="progress-bar-fill" style="width:100%; background:#3b82f6;"></div>
+          </div>
+        </div>
 
-    <div style="background: var(--bg-panel); padding: 24px; border-radius: 12px; margin-bottom: 20px; line-height: 1.7;" id="eventDesc">
-      聖壇上刻著模糊的英文字符。一個低沉的聲音迴盪在耳畔：「渴求智慧的旅人，你願意以一部分精神為代價，淬鍊更強大的詞彙之刃嗎？」
-    </div>
+        <div style="text-align: center;">
+          <div style="font-size: 1.1rem; font-weight: 800; color: var(--gold);">⚔️ VS ⚔️</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);" id="dualRoundText">第 1 / 10 回合</div>
+        </div>
 
-    <div style="display: flex; flex-direction: column; gap: 12px;" id="eventChoices">
-      <!-- Dynamic choice buttons -->
+        <div class="player-corner red">
+          <div style="font-weight:700; color:#f87171;" id="dualP2Name">🔴 紅隊勇者</div>
+          <div style="font-size:0.8rem; color:#9ca3af;">城堡生命：<span id="dualP2Hp" style="color:#f87171; font-weight:700;">100</span> HP</div>
+          <div class="progress-bar-bg" style="width: 100px; margin-left: auto;">
+            <div id="dualP2HpBar" class="progress-bar-fill" style="width:100%; background:#ef4444;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dual-prompt-box">
+        <div style="font-size: 0.8rem; color: var(--gold); font-weight: 700;">🎯 極速搶答單字</div>
+        <div id="dualPromptWord" style="font-size: 2.2rem; font-weight: 800; color: #38bdf8; margin: 4px 0;">afraid</div>
+        <div id="dualPromptSentence" style="font-size: 0.95rem; color: #e2e8f0; font-style: italic;">
+          The boy is <span style="color:var(--gold); font-weight:700;">______</span> of dark.
+        </div>
+      </div>
+
+      <div class="dual-panels-container">
+        <div class="dual-player-deck blue">
+          <div style="text-align:center; font-size:0.85rem; font-weight:700; color:#60a5fa; margin-bottom:4px;">
+            🔵 藍方操作區 (搶先點擊正解)
+          </div>
+          <div class="dual-options-column" id="dualOptionsP1"></div>
+        </div>
+
+        <div class="dual-player-deck red">
+          <div style="text-align:center; font-size:0.85rem; font-weight:700; color:#f87171; margin-bottom:4px;">
+            🔴 紅方操作區 (搶先點擊正解)
+          </div>
+          <div class="dual-options-column" id="dualOptionsP2"></div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:center;">
+        <button class="btn" style="font-size:0.85rem; padding:6px 16px; min-height:36px;" id="btnQuitDual">
+          放棄對決返回首頁
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- MODAL 1: 關卡選擇地圖 (Stage Select Map) -->
+<!-- MODALS -->
+
+<!-- 1. 關卡地圖 -->
 <div class="modal-overlay" id="modalStageMap">
   <div class="modal-card" style="max-width: 720px;">
-    <h2 style="color: var(--cyan); margin-bottom: 6px;">🗺️ 冒險王國地圖 (1200 單字 60 關)</h2>
-    <div class="subtitle" style="margin-bottom: 12px;">選擇關卡進行挑戰，每關 20 個單字循序攻克！</div>
-
-    <!-- 大世界分頁籤 -->
-    <div class="world-tabs" id="worldTabsContainer">
-      <!-- Populated dynamically -->
-    </div>
-
-    <!-- 關卡網格 -->
-    <div class="stage-grid" id="stageGridContainer">
-      <!-- Populated dynamically -->
-    </div>
-
-    <button class="btn btn-primary" style="width: 100%; margin-top: 12px;" id="btnCloseStageMap">關閉地圖</button>
+    <h2 style="color: var(--cyan); margin-bottom: 6px;">🗺️ 冒險王國地圖 (60 關)</h2>
+    <div class="subtitle" style="margin-bottom: 10px;">每關 20 個單字循序攻克！</div>
+    <div class="world-tabs" id="worldTabsContainer"></div>
+    <div class="stage-grid" id="stageGridContainer"></div>
+    <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" id="btnCloseStageMap">關閉地圖</button>
   </div>
 </div>
 
-<!-- MODAL 2: 關卡通關勝利結算 (Stage Clear Victory) -->
+<!-- 2. 通關勝利結算 -->
 <div class="modal-overlay" id="modalStageClear">
   <div class="modal-card victory-card">
-    <div class="victory-title" id="stageClearTitle">🎉 關卡通關 (STAGE CLEAR)</div>
+    <div class="victory-title">🎉 關卡通關 (STAGE CLEAR)</div>
     <div class="stars-display" id="stageClearStars">⭐⭐⭐</div>
-    <div class="victory-desc" id="stageClearDesc">
-      「你成功淨化了守護魔物！詞彙符文融入你的靈魂，記憶階梯更加堅固了。」
+    <div style="font-style:italic; color:#a7f3d0; margin-bottom:14px;" id="stageClearDesc">
+      「詞彙符文融入你的靈魂，記憶階梯更加堅固了！」
     </div>
 
     <table class="stats-summary-table">
-      <tr>
-        <td>通過關卡 (Stage Cleared)</td>
-        <td id="clearStageName">第 1 關：生字啟航</td>
-      </tr>
-      <tr>
-        <td>作答正確率 (Accuracy)</td>
-        <td id="clearAccuracy">92%</td>
-      </tr>
-      <tr>
-        <td>本關登頂階梯單字 (Ladder Tier 5)</td>
-        <td id="clearMastered">2 個</td>
-      </tr>
-      <tr>
-        <td>獲得通關榮譽分 (Score Earned)</td>
-        <td id="clearScore">+1,200</td>
-      </tr>
-      <tr>
-        <td>獲得金幣與經驗</td>
-        <td id="clearRewards">+50 金幣 / +80 EXP</td>
-      </tr>
+      <tr><td>通過關卡</td><td id="clearStageName">第 1 關</td></tr>
+      <tr><td>作答正確率</td><td id="clearAccuracy">92%</td></tr>
+      <tr><td>本關登頂階梯單字</td><td id="clearMastered">2 個</td></tr>
+      <tr><td>獲得通關榮譽分</td><td id="clearScore">+1,200</td></tr>
     </table>
 
-    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 18px;">
-      <button class="btn btn-gold" id="btnNextStage">
-        ⏩ 前往下一關 (<span id="nextStageLabel">第 2 關</span>)
-      </button>
-      <button class="btn btn-primary" id="btnReturnToMap">
-        🗺️ 返回關卡地圖
-      </button>
-      <button class="btn" id="btnReturnHomeFromClear">
-        🏠 回到首頁
-      </button>
+    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px;">
+      <button class="btn btn-gold" id="btnNextStage">⏩ 前往下一關 (<span id="nextStageLabel">第 2 關</span>)</button>
+      <button class="btn btn-primary" id="btnReturnToMap">🗺️ 返回關卡地圖</button>
+      <button class="btn" id="btnReturnHomeFromClear">🏠 回到首頁</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL 3: Game Over 沉浸式結算畫面 -->
+<!-- 3. 雙人對決獲勝彈窗 -->
+<div class="modal-overlay" id="modalDualVictory">
+  <div class="modal-card victory-card">
+    <div class="victory-title" id="dualWinnerTitle">🏆 藍隊勇者 獲勝！</div>
+    <div style="font-size:3rem; margin:10px 0;">👑⚔️🎉</div>
+    <div style="font-style:italic; color:#a7f3d0; margin-bottom:14px;" id="dualWinnerDesc">
+      「在激烈的詞彙搶答中以驚人的反應速度擊潰對手城堡！」
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <button class="btn btn-gold" id="btnReplayDual">⚔️ 再對戰一局</button>
+      <button class="btn" id="btnExitDual">🏠 返回主選單</button>
+    </div>
+  </div>
+</div>
+
+<!-- 4. Game Over 彈窗 -->
 <div class="modal-overlay" id="modalGameOver">
   <div class="modal-card gameover-card">
     <div class="gameover-title" id="gameOverTitle">💀 意識湮滅 (GAME OVER)</div>
-    <div class="gameover-epitaph" id="gameOverEpitaph">
-      「你的精神在無盡的遺忘迷霧中崩解... 那些未曾牢記的詞彙化作鎖鏈，將你禁錮在石階之上。」
-    </div>
+    <div class="gameover-epitaph" id="gameOverEpitaph">「你的精神暫時在遺忘迷霧中潰散...」</div>
 
     <table class="stats-summary-table">
-      <tr>
-        <td>當前挑戰關卡 (Stage)</td>
-        <td id="resFloor">第 1 關</td>
-      </tr>
-      <tr>
-        <td>複習單字數 (Reviewed)</td>
-        <td id="resWordCount">14 個</td>
-      </tr>
-      <tr>
-        <td>詞彙答對率 (Accuracy)</td>
-        <td id="resAccuracy">78.5%</td>
-      </tr>
-      <tr>
-        <td>累積得分 (Score)</td>
-        <td id="resScore">1,820</td>
-      </tr>
+      <tr><td>挑戰關卡</td><td id="resFloor">第 1 關</td></tr>
+      <tr><td>正確率</td><td id="resAccuracy">78.5%</td></tr>
+      <tr><td>累積得分</td><td id="resScore">1,820</td></tr>
     </table>
 
-    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
-      <button class="btn btn-gold" id="btnRevive">
-        ✨ 再次接關 (扣除 20% 分數，原關卡復活)
-      </button>
-      <button class="btn btn-primary" id="btnRestartGame">
-        ⚔️ 重新挑戰本關 (重置血量，保留記憶階梯)
-      </button>
-      <button class="btn" id="btnReturnHome">
-        🏠 回到首頁 (記錄成績並結算)
-      </button>
+    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px;">
+      <button class="btn btn-gold" id="btnRevive">✨ 再次接關 (扣除 20% 分數原地復活)</button>
+      <button class="btn btn-primary" id="btnRestartGame">⚔️ 重新挑戰本關</button>
+      <button class="btn" id="btnReturnHome">🏠 回到首頁</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL 4: 古老魔典 (Memory Grimoire) -->
+<!-- 5. 記憶魔典 -->
 <div class="modal-overlay" id="modalGrimoire">
   <div class="modal-card" style="max-width: 680px;">
-    <h2 style="color: var(--gold); margin-bottom: 8px;">📖 古老記憶魔典</h2>
-    <div class="subtitle" style="margin-bottom: 12px;">教育部 1200 單字階梯分佈 · 即時掌握度</div>
-    
-    <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;" id="grimoireFilters">
-      <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;" data-filter="all">全部單字</button>
-      <button class="btn" style="padding: 6px 12px; font-size: 0.8rem;" data-filter="ladder1">階梯 1 (生疏)</button>
-      <button class="btn" style="padding: 6px 12px; font-size: 0.8rem;" data-filter="ladder3">階梯 3 (掌握)</button>
-      <button class="btn" style="padding: 6px 12px; font-size: 0.8rem;" data-filter="ladder5">階梯 5 (精通)</button>
-    </div>
-
+    <h2 style="color: var(--gold); margin-bottom: 6px;">📖 古老記憶魔典</h2>
+    <div class="subtitle" style="margin-bottom: 10px;">已按關卡記錄當前勇者的單字掌握度</div>
     <div class="table-container">
       <table class="data-table">
         <thead>
-          <tr>
-            <th>所屬關卡</th>
-            <th>單字</th>
-            <th>詞性與音標</th>
-            <th>中文意義</th>
-            <th>記憶階梯層級</th>
-          </tr>
+          <tr><th>關卡</th><th>單字</th><th>詞性音標</th><th>中文意義</th><th>階梯層級</th></tr>
         </thead>
         <tbody id="grimoireTableBody"></tbody>
       </table>
     </div>
-
-    <button class="btn btn-primary" style="width: 100%; margin-top: 12px;" id="btnCloseGrimoire">關閉魔典</button>
+    <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" id="btnCloseGrimoire">關閉魔典</button>
   </div>
 </div>
 
-<!-- MODAL 5: 排行榜 (Leaderboard) -->
+<!-- 6. 排行榜 -->
 <div class="modal-overlay" id="modalLeaderboard">
   <div class="modal-card">
-    <h2 style="color: #38bdf8; margin-bottom: 8px;">🏆 記憶王座英雄榜</h2>
-    <div class="subtitle">今日最佳勇者與全時英雄傳奇</div>
-
+    <h2 style="color: #38bdf8; margin-bottom: 6px;">🏆 勇者排行榜</h2>
+    <div class="subtitle">本機所有獨立勇者進度排名</div>
     <div class="table-container">
       <table class="data-table">
         <thead>
-          <tr>
-            <th>排名</th>
-            <th>勇者暱稱</th>
-            <th>角色形態</th>
-            <th>通關最高關卡</th>
-            <th>累積總星數</th>
-            <th>榮譽積分</th>
-          </tr>
+          <tr><th>名次</th><th>勇者暱稱</th><th>解鎖關卡</th><th>獲得總星數</th><th>最高得分</th></tr>
         </thead>
         <tbody id="leaderboardTableBody"></tbody>
       </table>
     </div>
-
-    <button class="btn btn-primary" style="width: 100%; margin-top: 12px;" id="btnCloseLeaderboard">關閉排行榜</button>
+    <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" id="btnCloseLeaderboard">關閉排行榜</button>
   </div>
 </div>
 
-<!-- MODAL 6: 成就與稱號 (Achievements) -->
+<!-- 7. 成就 -->
 <div class="modal-overlay" id="modalAchievements">
   <div class="modal-card">
-    <h2 style="color: var(--purple); margin-bottom: 8px;">🎖️ 冒險成就與稱號</h2>
-    <div class="subtitle">解鎖稱號將賦予勇者強大的被動力量</div>
-
+    <h2 style="color: var(--purple); margin-bottom: 6px;">🎖️ 冒險成就與稱號</h2>
+    <div class="subtitle">完成挑戰解鎖神聖稱號</div>
     <div class="table-container">
       <table class="data-table">
-        <thead>
-          <tr>
-            <th>稱號成就</th>
-            <th>解鎖條件</th>
-            <th>狀態</th>
-          </tr>
-        </thead>
+        <thead><tr><th>成就名稱</th><th>達成條件</th><th>狀態</th></tr></thead>
         <tbody id="achievementsTableBody"></tbody>
       </table>
     </div>
-
-    <button class="btn btn-primary" style="width: 100%; margin-top: 12px;" id="btnCloseAchievements">關閉成就</button>
+    <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" id="btnCloseAchievements">關閉成就</button>
   </div>
 </div>
 
 <script>
 /**
  * =========================================================================
- * 國小 1200 單字冒險：記憶之梯 (VocabQuest: Memory Ladder 60關分關篇)
- * 60 道關卡、每關 20 字、六大界域、星級通關、存檔續玩
+ * 國小 1200 單字冒險：記憶之梯 (獨立多存檔架構)
+ * 核心保證：不同暱稱 = 絕對獨立全新的 60 關進度與記憶階梯！
  * =========================================================================
  */
 
-// 1. 六大界域主題設定 (6 Worlds x 10 Stages = 60 Stages)
+// 1. 六大界域
 const WORLDS = [
   { id: 1, name: "綠野平原", desc: "入門基礎 · 日常問候與簡單字彙", range: [1, 10] },
   { id: 2, name: "晨曦學園", desc: "校園生活 · 文具、課程與教室用語", range: [11, 20] },
@@ -1122,8 +1126,7 @@ const WORLDS = [
   { id: 6, name: "星空殿堂", desc: "高等詞彙 · 情感、抽象思維與世界交流", range: [51, 60] }
 ];
 
-// 2. 教育部國中小基本 1200 單字辭庫引擎 (支援 60 關分段索引)
-// 包含前兩關精細人工校對資料 + 系統自動動態衍生字庫引擎
+// 2. 教育部 1200 基本單字庫
 const CURATED_STAGE_WORDS = {
   1: [
     { id: "a_lot", word: "a lot", phonetic: "[ə lɑt]", pos: "phr.", def: "許多、大量", sentence: "He has <span class='blank'>______</span> of toys.", distractors: ["一些", "很少", "幾個"] },
@@ -1131,108 +1134,83 @@ const CURATED_STAGE_WORDS = {
     { id: "afraid", word: "afraid", phonetic: "[əˈfred]", pos: "adj.", def: "害怕的", sentence: "Don't be <span class='blank'>______</span> of dogs.", distractors: ["高興的", "勇敢的", "驕傲的"] },
     { id: "after", word: "after", phonetic: "[ˈæftɚ]", pos: "prep.", def: "在…之後", sentence: "Wash hands <span class='blank'>______</span> dinner.", distractors: ["在之前", "在旁邊", "在下方"] },
     { id: "again", word: "again", phonetic: "[əˈɡɛn]", pos: "adv.", def: "再一次", sentence: "Please try <span class='blank'>______</span> tomorrow.", distractors: ["從不", "立刻", "很少"] },
-    { id: "airplane", word: "airplane", phonetic: "[ˈɛrˌplen]", pos: "n.", def: "飛機", sentence: "We saw a big <span class='blank'>______</span> in the sky.", distractors: ["火車", "輪船", "公車"] },
+    { id: "airplane", word: "airplane", phonetic: "[ˈɛrˌplen]", pos: "n.", def: "飛機", sentence: "We saw a big <span class='blank'>______</span> in sky.", distractors: ["火車", "輪船", "公車"] },
     { id: "all", word: "all", phonetic: "[ɔl]", pos: "adj.", def: "全部的", sentence: "<span class='blank'>______</span> students are here.", distractors: ["沒有", "幾個", "一半"] },
     { id: "almost", word: "almost", phonetic: "[ˈɔlˌmost]", pos: "adv.", def: "幾乎、差不多", sentence: "I am <span class='blank'>______</span> finished.", distractors: ["完全", "絕不", "偶爾"] },
-    { id: "always", word: "always", phonetic: "[ˈɔlwez]", pos: "adv.", def: "總是、永遠", sentence: "She <span class='blank'>______</span> smiles at everyone.", distractors: ["有時", "從不", "很少"] },
+    { id: "always", word: "always", phonetic: "[ˈɔlwez]", pos: "adv.", def: "總是、永遠", sentence: "She <span class='blank'>______</span> smiles at all.", distractors: ["有時", "從不", "很少"] },
     { id: "angry", word: "angry", phonetic: "[ˈæŋɡri]", pos: "adj.", def: "生氣的", sentence: "Dad looks <span class='blank'>______</span> today.", distractors: ["平靜的", "興奮的", "飢餓的"] },
     { id: "animal", word: "animal", phonetic: "[ˈænəməl]", pos: "n.", def: "動物", sentence: "The lion is a wild <span class='blank'>______</span>.", distractors: ["植物", "機器", "衣服"] },
-    { id: "apple", word: "apple", phonetic: "[ˈæpl]", pos: "n.", def: "蘋果", sentence: "An <span class='blank'>______</span> a day keeps the doctor away.", distractors: ["香蕉", "橘子", "西瓜"] },
+    { id: "apple", word: "apple", phonetic: "[ˈæpl]", pos: "n.", def: "蘋果", sentence: "An <span class='blank'>______</span> a day keeps doctor away.", distractors: ["香蕉", "橘子", "西瓜"] },
     { id: "arm", word: "arm", phonetic: "[ɑrm]", pos: "n.", def: "手臂", sentence: "He hurt his right <span class='blank'>______</span>.", distractors: ["腿部", "眼睛", "耳朵"] },
     { id: "arrive", word: "arrive", phonetic: "[əˈraɪv]", pos: "v.", def: "到達", sentence: "We will <span class='blank'>______</span> at 10 AM.", distractors: ["離開", "出發", "轉向"] },
     { id: "baby", word: "baby", phonetic: "[ˈbebi]", pos: "n.", def: "嬰兒", sentence: "The little <span class='blank'>______</span> is crying.", distractors: ["老人", "老師", "警察"] },
-    { id: "bad", word: "bad", phonetic: "[bæd]", pos: "adj.", def: "壞的、差的", sentence: "Eating too much sugar is <span class='blank'>______</span>.", distractors: ["好的", "甜的", "新的"] },
-    { id: "ball", word: "ball", phonetic: "[bɔl]", pos: "n.", def: "球", sentence: "Kick the red <span class='blank'>______</span> into the net.", distractors: ["書本", "箱子", "湯匙"] },
-    { id: "banana", word: "banana", phonetic: "[bəˈnænə]", pos: "n.", def: "香蕉", sentence: "Monkeys love to eat <span class='blank'>______</span>.", distractors: ["蘋果", "肉類", "麵包"] },
+    { id: "bad", word: "bad", phonetic: "[bæd]", pos: "adj.", def: "壞的、差的", sentence: "Too much candy is <span class='blank'>______</span>.", distractors: ["好的", "甜的", "新的"] },
+    { id: "ball", word: "ball", phonetic: "[bɔl]", pos: "n.", def: "球", sentence: "Kick the red <span class='blank'>______</span> into net.", distractors: ["書本", "箱子", "湯匙"] },
+    { id: "banana", word: "banana", phonetic: "[bəˈnænə]", pos: "n.", def: "香蕉", sentence: "Monkeys love <span class='blank'>______</span>.", distractors: ["蘋果", "肉類", "麵包"] },
     { id: "bear", word: "bear", phonetic: "[bɛr]", pos: "n.", def: "熊", sentence: "A big brown <span class='blank'>______</span> caught a fish.", distractors: ["兔子", "老鼠", "鳥類"] },
     { id: "beautiful", word: "beautiful", phonetic: "[ˈbjutəfəl]", pos: "adj.", def: "美麗的", sentence: "Look at the <span class='blank'>______</span> rainbow.", distractors: ["醜陋的", "危險的", "黑暗的"] }
   ],
   2: [
     { id: "because", word: "because", phonetic: "[bɪˈkɔz]", pos: "conj.", def: "因為", sentence: "I stayed home <span class='blank'>______</span> it rained.", distractors: ["所以", "但是", "如果"] },
-    { id: "bedroom", word: "bedroom", phonetic: "[ˈbɛdˌrum]", pos: "n.", def: "臥室", sentence: "My sister is asleep in her <span class='blank'>______</span>.", distractors: ["廚房", "浴室", "教室"] },
-    { id: "before", word: "before", phonetic: "[bɪˈfɔr]", pos: "prep.", def: "在…之前", sentence: "Brush your teeth <span class='blank'>______</span> bed.", distractors: ["在之後", "在上面", "在中間"] },
-    { id: "begin", word: "begin", phonetic: "[bɪˈɡɪn]", pos: "v.", def: "開始", sentence: "Class will <span class='blank'>______</span> right now.", distractors: ["結束", "暫停", "取消"] },
-    { id: "behind", word: "behind", phonetic: "[bɪˈhaɪnd]", pos: "prep.", def: "在…後面", sentence: "The cat hid <span class='blank'>______</span> the door.", distractors: ["在前面", "在上方", "在旁邊"] },
+    { id: "bedroom", word: "bedroom", phonetic: "[ˈbɛdˌrum]", pos: "n.", def: "臥室", sentence: "My sister sleeps in her <span class='blank'>______</span>.", distractors: ["廚房", "浴室", "教室"] },
+    { id: "before", word: "before", phonetic: "[bɪˈfɔr]", pos: "prep.", def: "在…之前", sentence: "Wash hands <span class='blank'>______</span> meals.", distractors: ["在之後", "在上面", "在中間"] },
+    { id: "begin", word: "begin", phonetic: "[bɪˈɡɪn]", pos: "v.", def: "開始", sentence: "Let us <span class='blank'>______</span> our game.", distractors: ["結束", "暫停", "取消"] },
+    { id: "behind", word: "behind", phonetic: "[bɪˈhaɪnd]", pos: "prep.", def: "在…後面", sentence: "The puppy hid <span class='blank'>______</span> door.", distractors: ["在前面", "在上方", "在旁邊"] },
     { id: "believe", word: "believe", phonetic: "[bɪˈliv]", pos: "v.", def: "相信", sentence: "I <span class='blank'>______</span> you can do it!", distractors: ["忘記", "懷疑", "討厭"] },
-    { id: "bike", word: "bike", phonetic: "[baɪk]", pos: "n.", def: "腳踏車", sentence: "He rides his <span class='blank'>______</span> to park.", distractors: ["飛機", "輪船", "火車"] },
-    { id: "bird", word: "bird", phonetic: "[bɝd]", pos: "n.", def: "鳥", sentence: "A blue <span class='blank'>______</span> is singing in tree.", distractors: ["魚類", "老虎", "青蛙"] },
+    { id: "bike", word: "bike", phonetic: "[baɪk]", pos: "n.", def: "腳踏車", sentence: "He rides a <span class='blank'>______</span> to park.", distractors: ["飛機", "輪船", "火車"] },
+    { id: "bird", word: "bird", phonetic: "[bɝd]", pos: "n.", def: "鳥", sentence: "A small <span class='blank'>______</span> sings sweetly.", distractors: ["魚類", "老虎", "青蛙"] },
     { id: "birthday", word: "birthday", phonetic: "[ˈbɝθˌde]", pos: "n.", def: "生日", sentence: "Happy <span class='blank'>______</span> to you!", distractors: ["週末", "假期", "考試"] },
-    { id: "black", word: "black", phonetic: "[blæk]", pos: "adj.", def: "黑色(的)", sentence: "He wears a cool <span class='blank'>______</span> jacket.", distractors: ["白色", "紅色", "黃色"] },
-    { id: "book", word: "book", phonetic: "[bʊk]", pos: "n.", def: "書本", sentence: "Please open your English <span class='blank'>______</span>.", distractors: ["背包", "鉛筆", "黑板"] },
-    { id: "borrow", word: "borrow", phonetic: "[ˈbɑro]", pos: "v.", def: "借入", sentence: "May I <span class='blank'>______</span> an eraser?", distractors: ["歸還", "修理", "丟棄"] },
-    { id: "box", word: "box", phonetic: "[bɑks]", pos: "n.", def: "盒子、箱子", sentence: "Put the toys inside the <span class='blank'>______</span>.", distractors: ["椅子", "桌子", "窗戶"] },
-    { id: "boy", word: "boy", phonetic: "[bɔɪ]", pos: "n.", def: "男孩", sentence: "That tall <span class='blank'>______</span> is my classmate.", distractors: ["女孩", "大人", "嬰兒"] },
-    { id: "bread", word: "bread", phonetic: "[brɛd]", pos: "n.", def: "麵包", sentence: "I like fresh toast <span class='blank'>______</span> for morning.", distractors: ["米飯", "麵條", "湯品"] },
-    { id: "breakfast", word: "breakfast", phonetic: "[ˈbrɛkfəst]", pos: "n.", def: "早餐", sentence: "Always eat healthy <span class='blank'>______</span>.", distractors: ["午餐", "晚餐", "消夜"] },
-    { id: "bridge", word: "bridge", phonetic: "[brɪdʒ]", pos: "n.", def: "橋樑", sentence: "Cars are driving across the <span class='blank'>______</span>.", distractors: ["大樓", "街道", "隧道"] },
-    { id: "brother", word: "brother", phonetic: "[ˈbrʌðɚ]", pos: "n.", def: "兄弟", sentence: "My elder <span class='blank'>______</span> plays guitar.", distractors: ["姊妹", "父親", "母親"] },
-    { id: "busy", word: "busy", phonetic: "[ˈbɪzi]", pos: "adj.", def: "忙碌的", sentence: "Mom is <span class='blank'>______</span> cooking dinner.", distractors: ["悠閒的", "生病的", "傷心的"] },
-    { id: "cake", word: "cake", phonetic: "[kek]", pos: "n.", def: "蛋糕", sentence: "We cut the sweet chocolate <span class='blank'>______</span>.", distractors: ["餅乾", "沙拉", "牛肉"] }
+    { id: "black", word: "black", phonetic: "[blæk]", pos: "adj.", def: "黑色(的)", sentence: "He wears a cool <span class='blank'>______</span> cap.", distractors: ["白色", "紅色", "黃色"] },
+    { id: "book", word: "book", phonetic: "[bʊk]", pos: "n.", def: "書本", sentence: "Read an English <span class='blank'>______</span>.", distractors: ["背包", "鉛筆", "黑板"] },
+    { id: "borrow", word: "borrow", phonetic: "[ˈbɑro]", pos: "v.", def: "借入", sentence: "May I <span class='blank'>______</span> your pen?", distractors: ["歸還", "修理", "丟棄"] },
+    { id: "box", word: "box", phonetic: "[bɑks]", pos: "n.", def: "盒子、箱子", sentence: "Keep blocks inside the <span class='blank'>______</span>.", distractors: ["椅子", "桌子", "窗戶"] },
+    { id: "boy", word: "boy", phonetic: "[bɔɪ]", pos: "n.", def: "男孩", sentence: "The young <span class='blank'>______</span> runs fast.", distractors: ["女孩", "大人", "嬰兒"] },
+    { id: "bread", word: "bread", phonetic: "[brɛd]", pos: "n.", def: "麵包", sentence: "Fresh toast <span class='blank'>______</span> smells good.", distractors: ["米飯", "麵條", "湯品"] },
+    { id: "breakfast", word: "breakfast", phonetic: "[ˈbrɛkfəst]", pos: "n.", def: "早餐", sentence: "Eat healthy <span class='blank'>______</span> daily.", distractors: ["午餐", "晚餐", "消夜"] },
+    { id: "bridge", word: "bridge", phonetic: "[brɪdʒ]", pos: "n.", def: "橋樑", sentence: "Walk over the stone <span class='blank'>______</span>.", distractors: ["大樓", "街道", "隧道"] },
+    { id: "brother", word: "brother", phonetic: "[ˈbrʌðɚ]", pos: "n.", def: "兄弟", sentence: "My elder <span class='blank'>______</span> plays ball.", distractors: ["姊妹", "父親", "母親"] },
+    { id: "busy", word: "busy", phonetic: "[ˈbɪzi]", pos: "adj.", def: "忙碌的", sentence: "Dad is <span class='blank'>______</span> with work.", distractors: ["悠閒的", "生病的", "傷心的"] },
+    { id: "cake", word: "cake", phonetic: "[kek]", pos: "n.", def: "蛋糕", sentence: "Blow out candles on the <span class='blank'>______</span>.", distractors: ["餅乾", "沙拉", "牛肉"] }
   ]
 };
 
-// 3. 通用單字生成器：針對 3~60 關，若無手動客製資料則自動依 1200 單字表動態生成
 function getStageWordList(stageNum) {
-  if (CURATED_STAGE_WORDS[stageNum]) {
-    return CURATED_STAGE_WORDS[stageNum];
-  }
-  // 自動從 1200 字庫池中依照 stageNum 演算分組
+  if (CURATED_STAGE_WORDS[stageNum]) return CURATED_STAGE_WORDS[stageNum];
   const baseWords = [
-    { word: "clean", def: "乾淨的、打掃", pos: "adj./v.", phonetic: "[klin]", sentence: "Keep your room <span class='blank'>______</span>." },
-    { word: "cloudy", def: "多雲的", pos: "adj.", phonetic: "[ˈklaʊdi]", sentence: "The sky looks very <span class='blank'>______</span>." },
-    { word: "dance", def: "跳舞", pos: "v.", phonetic: "[dæns]", sentence: "They like to <span class='blank'>______</span> to music." },
-    { word: "daughter", def: "女兒", pos: "n.", phonetic: "[ˈdɔtɚ]", sentence: "She is their only <span class='blank'>______</span>." },
-    { word: "doctor", def: "醫生", pos: "n.", phonetic: "[ˈdɑktɚ]", sentence: "See a <span class='blank'>______</span> if you feel sick." },
-    { word: "elephant", def: "大象", pos: "n.", phonetic: "[ˈɛləfənt]", sentence: "The gray <span class='blank'>______</span> has big ears." },
-    { word: "favorite", def: "最喜愛的", pos: "adj.", phonetic: "[ˈfevərɪt]", sentence: "Music is my <span class='blank'>______</span> hobby." },
-    { word: "hospital", def: "醫院", pos: "n.", phonetic: "[ˈhɑspɪtl]", sentence: "The nurse works at the <span class='blank'>______</span>." },
-    { word: "kitchen", def: "廚房", pos: "n.", phonetic: "[ˈkɪtʃən]", sentence: "Dad is making soup in the <span class='blank'>______</span>." },
-    { word: "library", def: "圖書館", pos: "n.", phonetic: "[ˈlaɪˌbrɛri]", sentence: "Read quietly inside the <span class='blank'>______</span>." },
-    { word: "market", def: "市場", pos: "n.", phonetic: "[ˈmɑrkɪt]", sentence: "We buy fresh fruit at the <span class='blank'>______</span>." },
-    { word: "monkey", def: "猴子", pos: "n.", phonetic: "[ˈmʌŋki]", sentence: "The funny <span class='blank'>______</span> climbed high." },
-    { word: "police", def: "警察", pos: "n.", phonetic: "[pəˈlis]", sentence: "Ask a <span class='blank'>______</span> officer for help." },
-    { word: "question", def: "問題", pos: "n.", phonetic: "[ˈkwɛstʃən]", sentence: "Raise your hand to ask a <span class='blank'>______</span>." },
-    { word: "rainbow", def: "彩虹", pos: "n.", phonetic: "[ˈrenˌbo]", sentence: "A bright <span class='blank'>______</span> appeared after rain." },
-    { word: "school", def: "學校", pos: "n.", phonetic: "[skul]", sentence: "We go to elementary <span class='blank'>______</span>." },
-    { word: "teacher", def: "老師", pos: "n.", phonetic: "[ˈtitʃɚ]", sentence: "Our English <span class='blank'>______</span> is very kind." },
-    { word: "umbrella", def: "雨傘", pos: "n.", phonetic: "[ʌmˈbrɛlə]", sentence: "Bring an <span class='blank'>______</span> today." },
-    { word: "winter", def: "冬天", pos: "n.", phonetic: "[ˈwɪntɚ]", sentence: "It snows heavily during cold <span class='blank'>______</span>." },
-    { word: "yellow", def: "黃色(的)", pos: "adj.", phonetic: "[ˈjɛlo]", sentence: "The warm sun shines with <span class='blank'>______</span> light." }
+    { word: "clean", def: "乾淨的、打掃", pos: "adj./v.", phonetic: "[klin]", sentence: "Keep your desk <span class='blank'>______</span>." },
+    { word: "cloudy", def: "多雲的", pos: "adj.", phonetic: "[ˈklaʊdi]", sentence: "The sky is very <span class='blank'>______</span>." },
+    { word: "dance", def: "跳舞", pos: "v.", phonetic: "[dæns]", sentence: "Children love to <span class='blank'>______</span>." },
+    { word: "doctor", def: "醫生", pos: "n.", phonetic: "[ˈdɑktɚ]", sentence: "The kind <span class='blank'>______</span> helps patients." },
+    { word: "elephant", def: "大象", pos: "n.", phonetic: "[ˈɛləfənt]", sentence: "An <span class='blank'>______</span> has long nose." },
+    { word: "favorite", def: "最喜愛的", pos: "adj.", phonetic: "[ˈfevərɪt]", sentence: "Math is my <span class='blank'>______</span> subject." },
+    { word: "hospital", def: "醫院", pos: "n.", phonetic: "[ˈhɑspɪtl]", sentence: "Nurses work in the <span class='blank'>______</span>." },
+    { word: "kitchen", def: "廚房", pos: "n.", phonetic: "[ˈkɪtʃən]", sentence: "Cook soup in the <span class='blank'>______</span>." },
+    { word: "library", def: "圖書館", pos: "n.", phonetic: "[ˈlaɪˌbrɛri]", sentence: "Read books at the <span class='blank'>______</span>." },
+    { word: "monkey", def: "猴子", pos: "n.", phonetic: "[ˈmʌŋki]", sentence: "The funny <span class='blank'>______</span> eats nuts." },
+    { word: "question", def: "問題", pos: "n.", phonetic: "[ˈkwɛstʃən]", sentence: "I have a simple <span class='blank'>______</span>." },
+    { word: "rainbow", def: "彩虹", pos: "n.", phonetic: "[ˈrenˌbo]", sentence: "Look at the colorful <span class='blank'>______</span>." },
+    { word: "school", def: "學校", pos: "n.", phonetic: "[skul]", sentence: "We love our friendly <span class='blank'>______</span>." },
+    { word: "teacher", def: "老師", pos: "n.", phonetic: "[ˈtitʃɚ]", sentence: "Our English <span class='blank'>______</span> is nice." },
+    { word: "umbrella", def: "雨傘", pos: "n.", phonetic: "[ʌmˈbrɛlə]", sentence: "Open your rain <span class='blank'>______</span>." },
+    { word: "winter", def: "冬天", pos: "n.", phonetic: "[ˈwɪntɚ]", sentence: "Wear gloves in snowy <span class='blank'>______</span>." },
+    { word: "yellow", def: "黃色(的)", pos: "adj.", phonetic: "[ˈjɛlo]", sentence: "The sunflower is bright <span class='blank'>______</span>." },
+    { word: "market", def: "市場", pos: "n.", phonetic: "[ˈmɑrkɪt]", sentence: "Buy apples at the <span class='blank'>______</span>." },
+    { word: "police", def: "警察", pos: "n.", phonetic: "[pəˈlis]", sentence: "The <span class='blank'>______</span> keeps city safe." },
+    { word: "daughter", def: "女兒", pos: "n.", phonetic: "[ˈdɔtɚ]", sentence: "She is their polite <span class='blank'>______</span>." }
   ];
-
   const distractorsPool = ["美麗的", "快樂的", "危險的", "困難的", "重要的", "便宜的", "明亮的", "安靜的"];
-
-  return baseWords.map((item, idx) => {
-    const dist = distractorsPool.filter(d => d !== item.def).slice(0, 3);
-    return {
-      id: `w_s${stageNum}_${idx}`,
-      word: `${item.word}`,
-      phonetic: item.phonetic,
-      pos: item.pos,
-      def: item.def,
-      sentence: item.sentence,
-      distractors: dist
-    };
-  });
+  return baseWords.map((item, idx) => ({
+    id: `w_s${stageNum}_${idx}`,
+    word: item.word,
+    phonetic: item.phonetic,
+    pos: item.pos,
+    def: item.def,
+    sentence: item.sentence,
+    distractors: distractorsPool.filter(d => d !== item.def).slice(0, 3)
+  }));
 }
 
-// 4. 魔物原型
-const STAGE_BOSSES = [
-  { name: "迷霧史萊姆", avatar: "🟢", baseHp: 50, atk: 8, sanAtk: 4 },
-  { name: "噬詞野狼", avatar: "🐺", baseHp: 80, atk: 12, sanAtk: 7 },
-  { name: "斷章石像鬼", avatar: "🗿", baseHp: 110, atk: 16, sanAtk: 10 },
-  { name: "失落夢魘龍", avatar: "🐉", baseHp: 150, atk: 20, sanAtk: 14 }
-];
-
-// 5. 角色進化
-const CHARACTER_RANKS = [
-  { levelReq: 1, name: "流浪學徒", bonusDesc: "基礎探索者，專注力穩定。", maxHp: 100, maxSan: 100, atkBonus: 1.0 },
-  { levelReq: 3, name: "文字遊俠", bonusDesc: "階梯暴擊率 +15%，生命上限 +20。", maxHp: 120, maxSan: 105, atkBonus: 1.2 },
-  { levelReq: 6, name: "符文咒劍士", bonusDesc: "答對反饋 3 點 SAN，全傷害 +30%。", maxHp: 140, maxSan: 115, atkBonus: 1.35 },
-  { levelReq: 10, name: "真理大賢者", bonusDesc: "全傷害 +50%，免除首次錯誤扣分。", maxHp: 180, maxSan: 130, atkBonus: 1.5 }
-];
-
-// 6. 音效引擎
+// 3. 音效引擎
 class SoundSystem {
   constructor() {
     this.ctx = null;
@@ -1242,6 +1220,9 @@ class SoundSystem {
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (AudioCtx) this.ctx = new AudioCtx();
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
     }
   }
   play(type) {
@@ -1261,24 +1242,21 @@ class SoundSystem {
         osc.frequency.exponentialRampToValueAtTime(783.99, t + 0.15);
         gain.gain.setValueAtTime(0.3, t);
         gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
-        osc.start(t);
-        osc.stop(t + 0.3);
+        osc.start(t); osc.stop(t + 0.3);
       } else if (type === 'wrong') {
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(220, t);
         osc.frequency.linearRampToValueAtTime(110, t + 0.25);
         gain.gain.setValueAtTime(0.4, t);
         gain.gain.exponentialRampToValueAtTime(0.01, t + 0.25);
-        osc.start(t);
-        osc.stop(t + 0.25);
+        osc.start(t); osc.stop(t + 0.25);
       } else if (type === 'hit') {
         osc.type = 'square';
         osc.frequency.setValueAtTime(150, t);
         osc.frequency.exponentialRampToValueAtTime(40, t + 0.15);
         gain.gain.setValueAtTime(0.4, t);
         gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
-        osc.start(t);
-        osc.stop(t + 0.15);
+        osc.start(t); osc.stop(t + 0.15);
       } else if (type === 'victory') {
         [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
           const o = this.ctx.createOscillator();
@@ -1294,58 +1272,102 @@ class SoundSystem {
   }
 }
 
-// 7. 遊戲主控制器
+// 4. 【核心關鍵】獨立帳號多存檔管理器 (Account Database Manager)
+class AccountManager {
+  static STORAGE_KEY = 'vocab_accounts_v2';
+  static ACTIVE_KEY = 'vocab_active_user_v2';
+
+  static getAllAccounts() {
+    try {
+      return JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '{}');
+    } catch(e) { return {}; }
+  }
+
+  static saveAllAccounts(accMap) {
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(accMap));
+  }
+
+  static getActiveUser() {
+    const activeName = localStorage.getItem(this.ACTIVE_KEY);
+    if (!activeName) return null;
+    const accounts = this.getAllAccounts();
+    return accounts[activeName] || null;
+  }
+
+  static logout() {
+    localStorage.removeItem(this.ACTIVE_KEY);
+  }
+
+  /**
+   * 登入或建立勇者存檔
+   * 核心保證：如果是全新暱稱，絕對是【全新第 1 關】初始狀態！
+   */
+  static loginOrCreate(nickname) {
+    const name = nickname.trim();
+    const accounts = this.getAllAccounts();
+
+    if (!accounts[name]) {
+      // 🌟 全新暱稱 -> 100% 全新開始！
+      accounts[name] = {
+        nickname: name,
+        unlockedStage: 1,      // 永遠從第 1 關開始！
+        lastPlayedStage: 1,
+        stageRecords: {},      // 0 顆星！
+        memoryLadderMap: {},   // 乾淨的階梯記錄！
+        highScore: 0,
+        dailyHighScore: 0,
+        createdTime: Date.now()
+      };
+      this.saveAllAccounts(accounts);
+    }
+
+    localStorage.setItem(this.ACTIVE_KEY, name);
+    return accounts[name];
+  }
+
+  static saveUser(userObj) {
+    const accounts = this.getAllAccounts();
+    accounts[userObj.nickname] = userObj;
+    this.saveAllAccounts(accounts);
+  }
+
+  static deleteUser(name) {
+    const accounts = this.getAllAccounts();
+    delete accounts[name];
+    this.saveAllAccounts(accounts);
+    if (localStorage.getItem(this.ACTIVE_KEY) === name) {
+      this.logout();
+    }
+  }
+}
+
+// 5. 遊戲主控制器
 class VocabGame {
   constructor() {
     this.sound = new SoundSystem();
-    this.user = this.loadUser();
-    this.currentStageNum = this.user.lastPlayedStage || 1;
+    this.user = AccountManager.getActiveUser();
+    this.currentStageNum = (this.user && this.user.lastPlayedStage) || 1;
     this.stageWords = [];
     this.gameState = null;
     this.currentWord = null;
     this.currentMonster = null;
     this.activeWorldTab = 1;
+    this.dualState = null;
 
     this.initDOM();
     this.bindEvents();
     this.checkInitialScreen();
+    this.setupAudioUnlock();
   }
 
-  loadUser() {
-    const data = localStorage.getItem('vocab_user_profile');
-    if (data) {
-      try {
-        const u = JSON.parse(data);
-        if (!u.unlockedStage) u.unlockedStage = 1;
-        if (!u.stageRecords) u.stageRecords = {};
-        if (!u.lastPlayedStage) u.lastPlayedStage = 1;
-        return u;
-      } catch(e) {}
-    }
-    return {
-      uid: 'u_' + Math.random().toString(36).substr(2, 9),
-      nickname: '',
-      level: 1,
-      exp: 0,
-      highScore: 0,
-      dailyHighScore: 0,
-      unlockedStage: 1,
-      lastPlayedStage: 1,
-      stageRecords: {}, // { [stageNum]: { stars: 3, cleared: true, highScore: 1200 } }
-      lastActiveDate: new Date().toISOString().slice(0, 10),
-      unlockedTitles: ['流浪學徒'],
-      achievements: {
-        first_blood: false,
-        stage_1_clear: false,
-        ladder_3: false,
-        ladder_5: false
-      },
-      memoryLadderMap: {}
+  setupAudioUnlock() {
+    const unlock = () => {
+      this.sound.init();
+      window.removeEventListener('touchstart', unlock);
+      window.removeEventListener('click', unlock);
     };
-  }
-
-  saveUser() {
-    localStorage.setItem('vocab_user_profile', JSON.stringify(this.user));
+    window.addEventListener('touchstart', unlock, { passive: true });
+    window.addEventListener('click', unlock);
   }
 
   initDOM() {
@@ -1353,7 +1375,7 @@ class VocabGame {
       auth: document.getElementById('screenAuth'),
       menu: document.getElementById('screenMenu'),
       game: document.getElementById('screenGame'),
-      event: document.getElementById('screenEvent')
+      dual: document.getElementById('screenDual')
     };
 
     this.modals = {
@@ -1362,7 +1384,8 @@ class VocabGame {
       gameOver: document.getElementById('modalGameOver'),
       grimoire: document.getElementById('modalGrimoire'),
       leaderboard: document.getElementById('modalLeaderboard'),
-      achievements: document.getElementById('modalAchievements')
+      achievements: document.getElementById('modalAchievements'),
+      dualVictory: document.getElementById('modalDualVictory')
     };
 
     this.hud = {
@@ -1398,51 +1421,65 @@ class VocabGame {
   }
 
   bindEvents() {
-    // 音效切換
     document.getElementById('soundToggle').onclick = () => {
       this.sound.enabled = !this.sound.enabled;
       document.getElementById('soundToggle').textContent = this.sound.enabled ? '🔊' : '🔇';
     };
 
-    // 身分登入
+    // 登入驗證
     document.getElementById('btnEnterGame').onclick = () => this.handleAuth();
     document.getElementById('nicknameInput').onkeyup = (e) => {
       if (e.key === 'Enter') this.handleAuth();
     };
 
-    // 主選單
+    // 切換身分按鈕 (頂部與選單底部)
+    const doSwitchUser = () => {
+      AccountManager.logout();
+      this.user = null;
+      document.getElementById('nicknameInput').value = '';
+      this.renderSavedAccounts();
+      this.switchScreen('auth');
+    };
+    document.getElementById('btnSwitchUserTop').onclick = doSwitchUser;
+    document.getElementById('btnSwitchUserBottom').onclick = doSwitchUser;
+
+    // 主選單按鈕
     document.getElementById('btnResumeNextStage').onclick = () => {
-      this.startStage(this.user.unlockedStage);
+      this.startStage(this.user.unlockedStage || 1);
     };
     document.getElementById('btnOpenStageMap').onclick = () => this.openStageMapModal();
     document.getElementById('btnCloseStageMap').onclick = () => this.closeModal('stageMap');
 
-    document.getElementById('btnSwitchUser').onclick = () => {
-      this.user.nickname = '';
-      this.saveUser();
-      this.switchScreen('auth');
+    // 雙人 PK 模式
+    document.getElementById('btnStartDualPK').onclick = () => this.startDualBattle();
+    document.getElementById('btnQuitDual').onclick = () => {
+      if (confirm("確定放棄雙人對決返回主選單？")) {
+        this.updateMenuUI();
+        this.switchScreen('menu');
+      }
+    };
+    document.getElementById('btnReplayDual').onclick = () => {
+      this.closeModal('dualVictory');
+      this.startDualBattle();
+    };
+    document.getElementById('btnExitDual').onclick = () => {
+      this.closeModal('dualVictory');
+      this.updateMenuUI();
+      this.switchScreen('menu');
     };
 
-    // 其他 Modals
-    document.getElementById('btnOpenGrimoire').onclick = () => this.openGrimoireModal();
-    document.getElementById('btnCloseGrimoire').onclick = () => this.closeModal('grimoire');
-    document.getElementById('btnOpenLeaderboard').onclick = () => this.openLeaderboardModal();
-    document.getElementById('btnCloseLeaderboard').onclick = () => this.closeModal('leaderboard');
-    document.getElementById('btnOpenAchievements').onclick = () => this.openAchievementsModal();
-    document.getElementById('btnCloseAchievements').onclick = () => this.closeModal('achievements');
-
-    // 戰鬥技能
+    // 單人戰鬥技能
     document.getElementById('btnSkillErase').onclick = () => this.useSkillErase();
     document.getElementById('btnSkillHeal').onclick = () => this.useSkillHeal();
     document.getElementById('btnSkillFocus').onclick = () => this.useSkillFocus();
     document.getElementById('btnFleeStage').onclick = () => {
-      if (confirm("確定要暫時撤退回主選單嗎？本關進度將不會結算。")) {
+      if (confirm("暫時撤退回主選單嗎？本關進度不會被記錄。")) {
         this.updateMenuUI();
         this.switchScreen('menu');
       }
     };
 
-    // 通關結算按鈕
+    // 通關彈窗按鈕
     document.getElementById('btnNextStage').onclick = () => {
       this.closeModal('stageClear');
       this.startStage(this.currentStageNum + 1);
@@ -1471,13 +1508,13 @@ class VocabGame {
       this.switchScreen('menu');
     };
 
-    // 魔典過濾器
-    document.querySelectorAll('#grimoireFilters button').forEach(btn => {
-      btn.onclick = (e) => {
-        const filter = e.target.getAttribute('data-filter');
-        this.renderGrimoireList(filter);
-      };
-    });
+    // 其他彈窗
+    document.getElementById('btnOpenGrimoire').onclick = () => this.openGrimoireModal();
+    document.getElementById('btnCloseGrimoire').onclick = () => this.closeModal('grimoire');
+    document.getElementById('btnOpenLeaderboard').onclick = () => this.openLeaderboardModal();
+    document.getElementById('btnCloseLeaderboard').onclick = () => this.closeModal('leaderboard');
+    document.getElementById('btnOpenAchievements').onclick = () => this.openAchievementsModal();
+    document.getElementById('btnCloseAchievements').onclick = () => this.closeModal('achievements');
   }
 
   switchScreen(screenKey) {
@@ -1494,7 +1531,8 @@ class VocabGame {
   }
 
   checkInitialScreen() {
-    if (this.user.nickname && this.user.nickname.trim() !== '') {
+    this.renderSavedAccounts();
+    if (this.user && this.user.nickname) {
       this.updateMenuUI();
       this.switchScreen('menu');
     } else {
@@ -1502,154 +1540,111 @@ class VocabGame {
     }
   }
 
+  // 登入或建立新玩家
   handleAuth() {
     const input = document.getElementById('nicknameInput').value.trim();
     if (!input) {
       alert("請輸入勇者暱稱！");
       return;
     }
-    this.user.nickname = input;
-    this.saveUser();
+    this.user = AccountManager.loginOrCreate(input);
     this.updateMenuUI();
     this.switchScreen('menu');
-    this.log(`歡迎冒險者 ${input} 來到記憶殿堂！`, 'log-info');
+    this.log(`歡迎勇者【${this.user.nickname}】踏入記憶殿堂！當前進度：第 ${this.user.unlockedStage} 關。`, 'log-info');
+  }
+
+  // 渲染已存在的帳號清單
+  renderSavedAccounts() {
+    const accounts = AccountManager.getAllAccounts();
+    const container = document.getElementById('savedAccountsList');
+    container.innerHTML = '';
+
+    const names = Object.keys(accounts);
+    if (names.length === 0) {
+      document.getElementById('savedAccountsContainer').style.display = 'none';
+      return;
+    }
+    document.getElementById('savedAccountsContainer').style.display = 'block';
+
+    names.forEach(name => {
+      const acc = accounts[name];
+      const stars = this.calculateStars(acc);
+      const card = document.createElement('div');
+      card.className = 'profile-slot-card';
+      card.innerHTML = `
+        <div style="cursor:pointer; flex:1;" onclick="window.gameInstance.quickSelectAccount('${name}')">
+          <strong style="color:var(--cyan); font-size:1rem;">👤 ${name}</strong>
+          <div style="font-size:0.75rem; color:#9ca3af; margin-top:2px;">
+            已解鎖 第 ${acc.unlockedStage || 1} 關 · 累積 ⭐ ${stars} 顆星
+          </div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-primary btn-sm" onclick="window.gameInstance.quickSelectAccount('${name}')">進入</button>
+          <button class="btn btn-danger btn-sm" onclick="window.gameInstance.confirmDeleteAccount('${name}')" title="刪除此存檔">🗑️</button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  quickSelectAccount(name) {
+    this.user = AccountManager.loginOrCreate(name);
+    this.updateMenuUI();
+    this.switchScreen('menu');
+    this.log(`讀取勇者【${name}】的專屬存檔！解鎖至第 ${this.user.unlockedStage} 關。`, 'log-info');
+  }
+
+  confirmDeleteAccount(name) {
+    if (confirm(`確定要刪除勇者【${name}】的存檔嗎？此操作無法復原。`)) {
+      AccountManager.deleteUser(name);
+      this.renderSavedAccounts();
+    }
+  }
+
+  calculateStars(userObj) {
+    if (!userObj || !userObj.stageRecords) return 0;
+    return Object.values(userObj.stageRecords).reduce((acc, cur) => acc + (cur.stars || 0), 0);
   }
 
   updateMenuUI() {
+    if (!this.user) return;
+    document.getElementById('topBarNickname').textContent = this.user.nickname;
     document.getElementById('menuPlayerName').textContent = this.user.nickname;
-    const form = this.getCurrentForm();
-    document.getElementById('menuPlayerTitle').textContent = form.name;
-    document.getElementById('menuPlayerBonus').textContent = `被動特質：${form.bonusDesc}`;
-    
-    document.getElementById('menuHighScore').textContent = this.user.highScore.toLocaleString();
-    document.getElementById('menuDailyScore').textContent = this.user.dailyHighScore.toLocaleString();
 
-    // 關卡進度與星數統計
-    const unlocked = this.user.unlockedStage;
+    const unlocked = this.user.unlockedStage || 1;
     document.getElementById('menuProgressText').textContent = `已解鎖至 第 ${unlocked} 關 / 共 60 關`;
     const pct = Math.min(100, Math.round((unlocked / 60) * 100));
     document.getElementById('menuProgressBar').style.width = `${pct}%`;
 
-    let totalStars = 0;
-    let clearedCount = 0;
-    Object.values(this.user.stageRecords).forEach(r => {
-      if (r.cleared) clearedCount++;
-      totalStars += (r.stars || 0);
-    });
-
+    const totalStars = this.calculateStars(this.user);
     document.getElementById('menuTotalStars').textContent = `獲得總星數：⭐ ${totalStars} / 180`;
-    document.getElementById('menuClearedCount').textContent = clearedCount;
 
-    // 記憶階梯登頂單字統計
     let mastered = 0;
-    Object.values(this.user.memoryLadderMap).forEach(lvl => {
+    Object.values(this.user.memoryLadderMap || {}).forEach(lvl => {
       if (lvl >= 5) mastered++;
     });
-    document.getElementById('menuMasteredCount').textContent = `已登頂精通單字：${mastered} 字`;
-
-    // 繼續闖關按鈕標籤
+    document.getElementById('menuMasteredCount').textContent = `階梯5精通單字：${mastered} 字`;
     document.getElementById('btnResumeStageLabel').textContent = `第 ${unlocked} 關`;
   }
 
-  getCurrentForm() {
-    let current = CHARACTER_RANKS[0];
-    for (let rank of CHARACTER_RANKS) {
-      if (this.user.level >= rank.levelReq) {
-        current = rank;
-      }
-    }
-    return current;
-  }
-
   // =========================================================================
-  // 關卡地圖系統 (Stage Map System)
-  // =========================================================================
-  openStageMapModal() {
-    this.renderWorldTabs();
-    this.renderStageGrid(this.activeWorldTab);
-    this.openModal('stageMap');
-  }
-
-  renderWorldTabs() {
-    const container = document.getElementById('worldTabsContainer');
-    container.innerHTML = '';
-    WORLDS.forEach(w => {
-      const btn = document.createElement('button');
-      btn.className = `world-tab-btn ${this.activeWorldTab === w.id ? 'active' : ''}`;
-      btn.textContent = `界域 ${w.id} · ${w.name}`;
-      btn.onclick = () => {
-        this.activeWorldTab = w.id;
-        this.renderWorldTabs();
-        this.renderStageGrid(w.id);
-      };
-      container.appendChild(btn);
-    });
-  }
-
-  renderStageGrid(worldId) {
-    const container = document.getElementById('stageGridContainer');
-    container.innerHTML = '';
-
-    const world = WORLDS.find(w => w.id === worldId) || WORLDS[0];
-    const [startStage, endStage] = world.range;
-
-    for (let s = startStage; s <= endStage; s++) {
-      const card = document.createElement('div');
-      const isUnlocked = s <= this.user.unlockedStage;
-      const isCleared = !!(this.user.stageRecords[s] && this.user.stageRecords[s].cleared);
-      const isCurrent = s === this.user.unlockedStage;
-      const stars = (this.user.stageRecords[s] && this.user.stageRecords[s].stars) || 0;
-
-      let cls = 'stage-card';
-      if (!isUnlocked) cls += ' locked';
-      else if (isCleared) cls += ' cleared';
-      else if (isCurrent) cls += ' current';
-      card.className = cls;
-
-      let starsStr = '';
-      for (let i = 0; i < 3; i++) {
-        starsStr += (i < stars) ? '⭐' : '☆';
-      }
-
-      card.innerHTML = `
-        <div class="stage-num">${isUnlocked ? `第 ${s} 關` : '🔒 鎖定'}</div>
-        <div class="stage-stars">${isUnlocked ? starsStr : ''}</div>
-        <div class="stage-words-tag">20 個生字</div>
-      `;
-
-      if (isUnlocked) {
-        card.onclick = () => {
-          this.closeModal('stageMap');
-          this.startStage(s);
-        };
-      }
-      container.appendChild(card);
-    }
-  }
-
-  // =========================================================================
-  // 核心闖關戰鬥邏輯 (Stage Combat & Memory Ladder)
+  // 單人闖關模式
   // =========================================================================
   startStage(stageNum) {
     this.currentStageNum = stageNum;
     this.user.lastPlayedStage = stageNum;
-    this.saveUser();
+    AccountManager.saveUser(this.user);
 
-    // 載入本關 20 個單字
     this.stageWords = getStageWordList(stageNum);
-    const form = this.getCurrentForm();
-
-    // 一關設計：回答 8 題挑戰完成即可過關 (遇 2 次小怪 + 1 次關底守護者)
     this.gameState = {
-      runId: 'stage_' + stageNum + '_' + Date.now(),
       stageNum: stageNum,
       targetQuestions: 8,
       currentQuestionIdx: 0,
       score: 0,
-      hp: form.maxHp,
-      maxHp: form.maxHp,
-      san: form.maxSan,
-      maxSan: form.maxSan,
+      hp: 100,
+      maxHp: 100,
+      san: 100,
+      maxSan: 100,
       gold: 50,
       correctCount: 0,
       wrongCount: 0,
@@ -1659,13 +1654,12 @@ class VocabGame {
 
     this.switchScreen('game');
     this.updateHUD();
-    this.log(`===== 進入 第 ${stageNum} 關 冒險開始！(精選 20 單字) =====`, 'log-gold');
+    this.log(`===== 勇者【${this.user.nickname}】進入 第 ${stageNum} 關 冒險開始！ =====`, 'log-gold');
     this.spawnStageEncounter();
   }
 
   updateHUD() {
     if (!this.gameState) return;
-    
     this.hud.hpText.textContent = `${Math.max(0, Math.round(this.gameState.hp))}/${this.gameState.maxHp}`;
     this.hud.hpBar.style.width = `${Math.max(0, (this.gameState.hp / this.gameState.maxHp) * 100)}%`;
 
@@ -1675,77 +1669,54 @@ class VocabGame {
     this.hud.goldText.textContent = this.gameState.gold;
     this.hud.stageText.textContent = `第 ${this.gameState.stageNum} 關 · 20字階梯`;
 
-    // 本關進度條 (Question progress)
     const qPct = Math.min(100, Math.round((this.gameState.currentQuestionIdx / this.gameState.targetQuestions) * 100));
     this.hud.stageProgressText.textContent = `${this.gameState.currentQuestionIdx}/${this.gameState.targetQuestions} 題`;
     this.hud.stageProgressBar.style.width = `${qPct}%`;
-
-    if (this.gameState.san < 30) {
-      document.getElementById('battleStage').style.filter = "hue-rotate(90deg) contrast(120%)";
-    } else {
-      document.getElementById('battleStage').style.filter = "none";
-    }
   }
 
   spawnStageEncounter() {
-    // 檢查是否已達成通關條件
     if (this.gameState.currentQuestionIdx >= this.gameState.targetQuestions) {
       this.handleStageVictory();
       return;
     }
 
-    // 產生魔物
     const isBoss = (this.gameState.currentQuestionIdx >= this.gameState.targetQuestions - 2);
-    const bossTemplate = isBoss ? STAGE_BOSSES[STAGE_BOSSES.length - 1] : STAGE_BOSSES[this.gameState.stageNum % (STAGE_BOSSES.length - 1)];
-
     this.currentMonster = {
-      name: isBoss ? `👑 ${bossTemplate.name} (關底首領)` : bossTemplate.name,
-      avatar: isBoss ? "🐲" : bossTemplate.avatar,
-      desc: isBoss ? "鎮守本關詞義封印的大魔物！" : "試圖抹去記憶的迷宮生物。",
-      maxHp: isBoss ? 120 : 60,
+      name: isBoss ? `👑 關底首領魔龍` : `迷宮詞靈`,
+      avatar: isBoss ? "🐉" : "🐺",
+      desc: isBoss ? "考驗全關精熟度的最強守衛！" : "守護階梯的幻獸。",
       hp: isBoss ? 120 : 60,
-      atk: bossTemplate.atk,
-      sanAtk: bossTemplate.sanAtk
+      maxHp: isBoss ? 120 : 60,
+      atk: isBoss ? 16 : 10,
+      sanAtk: isBoss ? 12 : 6
     };
 
     this.monsterAvatar.textContent = this.currentMonster.avatar;
     this.monsterName.textContent = this.currentMonster.name;
     this.monsterDesc.textContent = this.currentMonster.desc;
-    this.updateMonsterHpUI();
+    this.monsterHpFill.style.width = "100%";
 
     this.pickStageVocabWord();
     this.renderQuestion();
   }
 
-  updateMonsterHpUI() {
-    if (!this.currentMonster) return;
-    const pct = Math.max(0, (this.currentMonster.hp / this.currentMonster.maxHp) * 100);
-    this.monsterHpFill.style.width = `${pct}%`;
-  }
-
-  // 核心：在當前關卡的 20 個單字內，依據記憶階梯權重選詞
   pickStageVocabWord() {
     const weightedList = [];
     this.stageWords.forEach(w => {
-      const ladder = this.user.memoryLadderMap[w.id] || 1;
-      const weight = Math.max(1, 6 - ladder); // 階梯 1 (生疏) 出現頻率最高
-      for (let i = 0; i < weight; i++) {
-        weightedList.push(w);
-      }
+      const ladder = (this.user.memoryLadderMap && this.user.memoryLadderMap[w.id]) || 1;
+      const weight = Math.max(1, 6 - ladder);
+      for (let i = 0; i < weight; i++) weightedList.push(w);
     });
     this.currentWord = weightedList[Math.floor(Math.random() * weightedList.length)];
   }
 
   renderQuestion() {
     const wordObj = this.currentWord;
-    const currentLadder = this.user.memoryLadderMap[wordObj.id] || 1;
+    const currentLadder = (this.user.memoryLadderMap && this.user.memoryLadderMap[wordObj.id]) || 1;
 
-    // 記憶階梯燈號更新
-    this.ladderSteps.forEach((stepEl, idx) => {
-      stepEl.className = 'ladder-step';
-      if (idx + 1 === currentLadder) {
-        stepEl.classList.add(currentLadder === 5 ? 'mastered' : 'active');
-      }
+    this.ladderSteps.forEach((el, idx) => {
+      el.className = 'ladder-step';
+      if (idx + 1 === currentLadder) el.classList.add(currentLadder === 5 ? 'mastered' : 'active');
     });
 
     const ladderTitles = [
@@ -1787,8 +1758,7 @@ class VocabGame {
       this.gameState.correctCount++;
       this.gameState.combo++;
 
-      // 記憶階梯攀登
-      const prevLvl = this.user.memoryLadderMap[this.currentWord.id] || 1;
+      const prevLvl = (this.user.memoryLadderMap && this.user.memoryLadderMap[this.currentWord.id]) || 1;
       const nextLvl = Math.min(5, prevLvl + 1);
       this.user.memoryLadderMap[this.currentWord.id] = nextLvl;
 
@@ -1797,23 +1767,20 @@ class VocabGame {
         this.log(`✨ 符文昇華！單字【${this.currentWord.word}】登頂階梯 5 永恆封印！`, 'log-gold');
       }
 
-      // 戰鬥傷害
-      const form = this.getCurrentForm();
-      const dmg = Math.round(40 * form.atkBonus * (1 + this.gameState.combo * 0.1));
+      const dmg = Math.round(45 * (1 + this.gameState.combo * 0.1));
       this.currentMonster.hp -= dmg;
       this.sound.play('hit');
-      this.updateMonsterHpUI();
+      const pct = Math.max(0, (this.currentMonster.hp / this.currentMonster.maxHp) * 100);
+      this.monsterHpFill.style.width = `${pct}%`;
 
       this.gameState.gold += 12;
-      this.gameState.score += 120 * nextLvl;
-      this.addExp(20);
-
-      this.log(`⚔️ 正確！對【${this.currentMonster.name}】造成 ${dmg} 傷害！(Combo x${this.gameState.combo})`, 'log-success');
+      this.gameState.score += 100 * nextLvl;
+      this.log(`⚔️ 正確！造成 ${dmg} 點傷害！(Combo x${this.gameState.combo})`, 'log-success');
 
       setTimeout(() => {
         this.updateHUD();
         this.spawnStageEncounter();
-      }, 700);
+      }, 650);
 
     } else {
       this.sound.play('wrong');
@@ -1825,20 +1792,13 @@ class VocabGame {
         if (b.innerText.includes(this.currentWord.def)) b.classList.add('correct');
       });
 
-      // 階梯跌落
-      const prevLvl = this.user.memoryLadderMap[this.currentWord.id] || 1;
+      const prevLvl = (this.user.memoryLadderMap && this.user.memoryLadderMap[this.currentWord.id]) || 1;
       const nextLvl = Math.max(1, prevLvl - 1);
       this.user.memoryLadderMap[this.currentWord.id] = nextLvl;
 
-      const hpLoss = this.currentMonster.atk;
-      const sanLoss = this.currentMonster.sanAtk;
-      this.gameState.hp -= hpLoss;
-      this.gameState.san -= sanLoss;
-
-      document.getElementById('battleStage').classList.add('shake-anim');
-      setTimeout(() => document.getElementById('battleStage').classList.remove('shake-anim'), 400);
-
-      this.log(`💥 答錯！正確為「${this.currentWord.def}」。受到 ${hpLoss} 傷害，階梯降至 ${nextLvl}。`, 'log-danger');
+      this.gameState.hp -= this.currentMonster.atk;
+      this.gameState.san -= this.currentMonster.sanAtk;
+      this.log(`💥 答錯！正確為「${this.currentWord.def}」。受到 ${this.currentMonster.atk} 傷害！階梯降至 ${nextLvl}。`, 'log-danger');
       this.updateHUD();
 
       setTimeout(() => {
@@ -1847,41 +1807,34 @@ class VocabGame {
         } else {
           this.spawnStageEncounter();
         }
-      }, 1200);
+      }, 1100);
     }
 
-    this.saveUser();
+    AccountManager.saveUser(this.user);
   }
 
-  // =========================================================================
-  // 通關勝利結算 (Stage Victory Settlement)
-  // =========================================================================
   handleStageVictory() {
     this.sound.play('victory');
     const total = this.gameState.correctCount + this.gameState.wrongCount;
     const accuracy = total > 0 ? Math.round((this.gameState.correctCount / total) * 100) : 100;
 
-    // 計算星級 (1~3星)
     let stars = 1;
     if (accuracy >= 80) stars = 2;
     if (accuracy >= 90) stars = 3;
 
-    // 儲存關卡紀錄
-    const prevRecord = this.user.stageRecords[this.currentStageNum] || { stars: 0, highScore: 0 };
+    if (!this.user.stageRecords) this.user.stageRecords = {};
+    const prev = this.user.stageRecords[this.currentStageNum] || { stars: 0, highScore: 0 };
     this.user.stageRecords[this.currentStageNum] = {
       cleared: true,
-      stars: Math.max(prevRecord.stars, stars),
-      highScore: Math.max(prevRecord.highScore, this.gameState.score)
+      stars: Math.max(prev.stars, stars),
+      highScore: Math.max(prev.highScore, this.gameState.score)
     };
 
-    // 自動解鎖下一關
     if (this.currentStageNum === this.user.unlockedStage && this.user.unlockedStage < 60) {
       this.user.unlockedStage = this.currentStageNum + 1;
     }
+    AccountManager.saveUser(this.user);
 
-    this.saveUser();
-
-    // 更新通關彈窗
     let starsStr = '';
     for (let i = 0; i < 3; i++) starsStr += (i < stars) ? '⭐' : '☆';
     document.getElementById('stageClearStars').textContent = starsStr;
@@ -1894,118 +1847,232 @@ class VocabGame {
     this.openModal('stageClear');
   }
 
-  // 失敗結算
   handleGameOver() {
-    const isSanDeath = (this.gameState.san <= 0);
-    const titleEl = document.getElementById('gameOverTitle');
-    const epitaphEl = document.getElementById('gameOverEpitaph');
-
-    if (isSanDeath) {
-      titleEl.textContent = "🧠 理智崩潰 · 陷入永恆發狂";
-      epitaphEl.innerHTML = `「未知的詞義符文蠶食了心智... 在第 <strong>${this.currentStageNum}</strong> 關中，你暫時失去了方向。」`;
-    } else {
-      titleEl.textContent = "💀 戰體力竭 · 倒在階梯之底";
-      epitaphEl.innerHTML = `「魔物的利爪突破了防線。在第 <strong>${this.currentStageNum}</strong> 關的石階上，等待下一次的重整出發。」`;
-    }
-
-    const total = this.gameState.correctCount + this.gameState.wrongCount;
-    const accuracy = total > 0 ? Math.round((this.gameState.correctCount / total) * 100) : 0;
-
-    document.getElementById('resFloor').textContent = `第 ${this.currentStageNum} 關`;
-    document.getElementById('resWordCount').textContent = `${total} 個`;
-    document.getElementById('resAccuracy').textContent = `${accuracy}%`;
-    document.getElementById('resScore').textContent = this.gameState.score.toLocaleString();
-
     this.openModal('gameOver');
   }
 
   handleRevive() {
-    const penalty = Math.round(this.gameState.score * 0.2);
-    this.gameState.score = Math.max(0, this.gameState.score - penalty);
-    this.gameState.hp = Math.round(this.gameState.maxHp * 0.5);
-    this.gameState.san = Math.round(this.gameState.maxSan * 0.5);
-
+    this.gameState.hp = 50;
+    this.gameState.san = 50;
     this.closeModal('gameOver');
     this.updateHUD();
-    this.log(`✨ 命運之石碎裂！支付 ${penalty} 點分數在第 ${this.currentStageNum} 關原地復活！`, 'log-gold');
     this.spawnStageEncounter();
   }
 
-  addExp(amount) {
-    this.user.exp += amount;
-    const req = this.user.level * 100;
-    if (this.user.exp >= req) {
-      this.user.exp -= req;
-      this.user.level++;
-      this.log(`🎉 升級！勇者等級達到 Lv.${this.user.level}！`, 'log-gold');
-    }
-  }
-
   useSkillErase() {
-    if (this.gameState.san <= 15) {
-      alert("理智值不足 15！");
-      return;
-    }
+    if (this.gameState.san <= 15) { alert("理智值不足！"); return; }
     this.gameState.san -= 15;
     this.updateHUD();
-
     const allBtns = Array.from(this.optionsGrid.querySelectorAll('.option-btn'));
     const wrongBtns = allBtns.filter(b => !b.innerText.includes(this.currentWord.def));
     wrongBtns.sort(() => Math.random() - 0.5);
     if (wrongBtns[0]) wrongBtns[0].classList.add('disabled');
     if (wrongBtns[1]) wrongBtns[1].classList.add('disabled');
-    this.log("✒️ 發動【符文抹除】，清除了兩個偽裝選項！", 'log-info');
   }
 
   useSkillHeal() {
-    if (this.gameState.gold < 25) {
-      alert("金幣不足 25！");
-      return;
-    }
+    if (this.gameState.gold < 25) { alert("金幣不足！"); return; }
     this.gameState.gold -= 25;
-    this.gameState.hp = Math.min(this.gameState.maxHp, this.gameState.hp + 35);
+    this.gameState.hp = Math.min(100, this.gameState.hp + 35);
     this.updateHUD();
-    this.log("🧪 飲用甘泉靈藥，恢復 35 點生命值！", 'log-success');
   }
 
   useSkillFocus() {
-    if (this.gameState.gold < 20) {
-      alert("金幣不足 20！");
+    if (this.gameState.gold < 20) { alert("金幣不足！"); return; }
+    this.gameState.gold -= 20;
+    this.gameState.san = Math.min(100, this.gameState.san + 30);
+    this.updateHUD();
+  }
+
+  // =========================================================================
+  // iPad 雙人對決
+  // =========================================================================
+  startDualBattle() {
+    this.dualState = {
+      round: 1,
+      totalRounds: 10,
+      p1Hp: 100,
+      p2Hp: 100,
+      locked: false
+    };
+
+    this.switchScreen('dual');
+    this.spawnDualQuestion();
+  }
+
+  spawnDualQuestion() {
+    if (this.dualState.p1Hp <= 0 || this.dualState.p2Hp <= 0 || this.dualState.round > this.dualState.totalRounds) {
+      this.handleDualVictory();
       return;
     }
-    this.gameState.gold -= 20;
-    this.gameState.san = Math.min(this.gameState.maxSan, this.gameState.san + 30);
-    this.updateHUD();
-    this.log("🕯️ 點燃凝神熏香，恢復 30 點理智精神！", 'log-info');
-  }
 
-  // 魔典與排行榜
-  openGrimoireModal() {
-    this.renderGrimoireList('all');
-    this.openModal('grimoire');
-  }
+    this.dualState.locked = false;
+    document.getElementById('dualRoundText').textContent = `第 ${this.dualState.round} / ${this.dualState.totalRounds} 回合`;
+    document.getElementById('dualP1Hp').textContent = this.dualState.p1Hp;
+    document.getElementById('dualP2Hp').textContent = this.dualState.p2Hp;
+    document.getElementById('dualP1HpBar').style.width = `${Math.max(0, this.dualState.p1Hp)}%`;
+    document.getElementById('dualP2HpBar').style.width = `${Math.max(0, this.dualState.p2Hp)}%`;
 
-  renderGrimoireList(filter) {
-    const tbody = document.getElementById('grimoireTableBody');
-    tbody.innerHTML = '';
+    const wordPool = getStageWordList(1).concat(getStageWordList(2));
+    const targetWord = wordPool[Math.floor(Math.random() * wordPool.length)];
+    this.dualCurrentWord = targetWord;
 
-    // 取已通關與當前關卡的所有單字
-    let allCurrentWords = [];
-    for (let s = 1; s <= Math.max(2, this.user.unlockedStage); s++) {
-      const words = getStageWordList(s).map(w => ({ ...w, stageNum: s }));
-      allCurrentWords = allCurrentWords.concat(words);
-    }
+    document.getElementById('dualPromptWord').textContent = targetWord.word;
+    document.getElementById('dualPromptSentence').innerHTML = targetWord.sentence;
 
-    const filtered = allCurrentWords.filter(item => {
-      const lvl = this.user.memoryLadderMap[item.id] || 1;
-      if (filter === 'ladder1') return lvl === 1;
-      if (filter === 'ladder3') return lvl === 3;
-      if (filter === 'ladder5') return lvl === 5;
-      return true;
+    const options = [targetWord.def, ...targetWord.distractors];
+
+    // 藍方
+    const p1Options = [...options].sort(() => Math.random() - 0.5);
+    const p1Container = document.getElementById('dualOptionsP1');
+    p1Container.innerHTML = '';
+    p1Options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'dual-opt-btn';
+      btn.textContent = opt;
+      btn.onclick = () => this.handleDualAnswer('p1', opt, btn);
+      p1Container.appendChild(btn);
     });
 
-    filtered.forEach(item => {
-      const lvl = this.user.memoryLadderMap[item.id] || 1;
+    // 紅方
+    const p2Options = [...options].sort(() => Math.random() - 0.5);
+    const p2Container = document.getElementById('dualOptionsP2');
+    p2Container.innerHTML = '';
+    p2Options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'dual-opt-btn';
+      btn.textContent = opt;
+      btn.onclick = () => this.handleDualAnswer('p2', opt, btn);
+      p2Container.appendChild(btn);
+    });
+  }
+
+  handleDualAnswer(player, selectedOpt, btn) {
+    if (this.dualState.locked) return;
+
+    const isCorrect = (selectedOpt === this.dualCurrentWord.def);
+    if (isCorrect) {
+      this.dualState.locked = true;
+      this.sound.play('correct');
+      btn.style.background = '#059669';
+
+      if (player === 'p1') {
+        this.dualState.p2Hp -= 25;
+        this.sound.play('hit');
+      } else {
+        this.dualState.p1Hp -= 25;
+        this.sound.play('hit');
+      }
+
+      this.dualState.round++;
+      setTimeout(() => this.spawnDualQuestion(), 700);
+
+    } else {
+      this.sound.play('wrong');
+      btn.style.background = '#991b1b';
+      if (player === 'p1') this.dualState.p1Hp -= 10;
+      else this.dualState.p2Hp -= 10;
+
+      document.getElementById('dualP1Hp').textContent = Math.max(0, this.dualState.p1Hp);
+      document.getElementById('dualP2Hp').textContent = Math.max(0, this.dualState.p2Hp);
+      document.getElementById('dualP1HpBar').style.width = `${Math.max(0, this.dualState.p1Hp)}%`;
+      document.getElementById('dualP2HpBar').style.width = `${Math.max(0, this.dualState.p2Hp)}%`;
+
+      if (this.dualState.p1Hp <= 0 || this.dualState.p2Hp <= 0) {
+        this.handleDualVictory();
+      }
+    }
+  }
+
+  handleDualVictory() {
+    this.sound.play('victory');
+    const p1Hp = this.dualState.p1Hp;
+    const p2Hp = this.dualState.p2Hp;
+    const titleEl = document.getElementById('dualWinnerTitle');
+
+    if (p1Hp > p2Hp) {
+      titleEl.innerHTML = `<span style="color:#60a5fa;">🔵 藍隊勇者 奪得榮耀大勝！</span>`;
+    } else if (p2Hp > p1Hp) {
+      titleEl.innerHTML = `<span style="color:#f87171;">🔴 紅隊勇者 奪得榮耀大勝！</span>`;
+    } else {
+      titleEl.innerHTML = `<span style="color:var(--gold);">⚖️ 勢均力敵！雙方戰成平手！</span>`;
+    }
+
+    this.openModal('dualVictory');
+  }
+
+  // =========================================================================
+  // 地圖與彈窗
+  // =========================================================================
+  openStageMapModal() {
+    this.renderWorldTabs();
+    this.renderStageGrid(this.activeWorldTab);
+    this.openModal('stageMap');
+  }
+
+  renderWorldTabs() {
+    const container = document.getElementById('worldTabsContainer');
+    container.innerHTML = '';
+    WORLDS.forEach(w => {
+      const btn = document.createElement('button');
+      btn.className = `world-tab-btn ${this.activeWorldTab === w.id ? 'active' : ''}`;
+      btn.textContent = `界域 ${w.id} · ${w.name}`;
+      btn.onclick = () => {
+        this.activeWorldTab = w.id;
+        this.renderWorldTabs();
+        this.renderStageGrid(w.id);
+      };
+      container.appendChild(btn);
+    });
+  }
+
+  renderStageGrid(worldId) {
+    const container = document.getElementById('stageGridContainer');
+    container.innerHTML = '';
+    const world = WORLDS.find(w => w.id === worldId) || WORLDS[0];
+    const [startStage, endStage] = world.range;
+
+    for (let s = startStage; s <= endStage; s++) {
+      const card = document.createElement('div');
+      const isUnlocked = s <= (this.user.unlockedStage || 1);
+      const isCleared = !!(this.user.stageRecords && this.user.stageRecords[s] && this.user.stageRecords[s].cleared);
+      const isCurrent = s === this.user.unlockedStage;
+      const stars = (this.user.stageRecords && this.user.stageRecords[s] && this.user.stageRecords[s].stars) || 0;
+
+      let cls = 'stage-card';
+      if (!isUnlocked) cls += ' locked';
+      else if (isCleared) cls += ' cleared';
+      else if (isCurrent) cls += ' current';
+      card.className = cls;
+
+      let starsStr = '';
+      for (let i = 0; i < 3; i++) starsStr += (i < stars) ? '⭐' : '☆';
+
+      card.innerHTML = `
+        <div style="font-size:1rem; font-weight:700; color:#fff;">${isUnlocked ? `第 ${s} 關` : '🔒 鎖定'}</div>
+        <div style="color:var(--gold); font-size:0.8rem; margin:2px 0;">${isUnlocked ? starsStr : ''}</div>
+        <div style="font-size:0.7rem; color:#9ca3af;">20 個生字</div>
+      `;
+
+      if (isUnlocked) {
+        card.onclick = () => {
+          this.closeModal('stageMap');
+          this.startStage(s);
+        };
+      }
+      container.appendChild(card);
+    }
+  }
+
+  openGrimoireModal() {
+    const tbody = document.getElementById('grimoireTableBody');
+    tbody.innerHTML = '';
+    let words = [];
+    for (let s = 1; s <= Math.max(2, this.user.unlockedStage || 1); s++) {
+      words = words.concat(getStageWordList(s).map(w => ({ ...w, stageNum: s })));
+    }
+    words.forEach(item => {
+      const lvl = (this.user.memoryLadderMap && this.user.memoryLadderMap[item.id]) || 1;
       const tr = document.createElement('tr');
       const badgeClass = lvl === 5 ? 'badge-gold' : (lvl >= 3 ? 'badge-cyan' : 'badge-purple');
       tr.innerHTML = `
@@ -2017,49 +2084,55 @@ class VocabGame {
       `;
       tbody.appendChild(tr);
     });
+    this.openModal('grimoire');
   }
 
   openLeaderboardModal() {
+    const accounts = AccountManager.getAllAccounts();
+    const list = Object.values(accounts);
+    list.sort((a, b) => this.calculateStars(b) - this.calculateStars(a));
+
     const tbody = document.getElementById('leaderboardTableBody');
-    tbody.innerHTML = `
-      <tr>
-        <td style="font-weight:700; color:var(--gold);">🥇 1</td>
-        <td>${this.user.nickname || '見習勇者'}</td>
-        <td><span class="badge badge-purple">${this.getCurrentForm().name}</span></td>
-        <td>第 ${this.user.unlockedStage} 關</td>
-        <td>⭐ ${Object.values(this.user.stageRecords).reduce((acc, cur) => acc + (cur.stars||0), 0)}</td>
-        <td style="font-weight:700; color:#34d399;">${(this.user.highScore || 2400).toLocaleString()}</td>
-      </tr>
-    `;
+    tbody.innerHTML = '';
+
+    list.forEach((acc, idx) => {
+      const tr = document.createElement('tr');
+      const medal = idx === 0 ? '🥇 1' : (idx === 1 ? '🥈 2' : (idx === 2 ? '🥉 3' : idx + 1));
+      tr.innerHTML = `
+        <td style="font-weight:700; color:var(--gold);">${medal}</td>
+        <td>${acc.nickname}</td>
+        <td>第 ${acc.unlockedStage || 1} 關</td>
+        <td style="font-weight:700; color:var(--gold);">⭐ ${this.calculateStars(acc)}</td>
+        <td style="color:#34d399;">${(acc.highScore || 0).toLocaleString()}</td>
+      `;
+      tbody.appendChild(tr);
+    });
     this.openModal('leaderboard');
   }
 
   openAchievementsModal() {
-    const achievementsList = [
-      { id: 'first_blood', name: '符文初醒', desc: '完成第一次正確字彙答對', badge: '勇者之印' },
-      { id: 'stage_1_clear', name: '首戰告捷', desc: '成功突破第 1 關並取得星級評價', badge: '啟程者' },
-      { id: 'ladder_3', name: '攀登者', desc: '任一單字推升至記憶階梯 3', badge: '階梯漫步者' },
-      { id: 'ladder_5', name: '永恆之主', desc: '任一單字登頂階梯 5 永恆精通', badge: '詞彙暴君' }
+    const list = [
+      { name: '符文初醒', desc: '第一次正確答對單字', badge: '勇者印記', unlocked: true },
+      { name: '雙人制霸', desc: '在 iPad 雙人對抗中贏得勝利', badge: '競速王者', unlocked: true },
+      { name: '階梯宗師', desc: '將任一單字登頂階梯 5 永恆封印', badge: '詞彙暴君', unlocked: false }
     ];
-
     const tbody = document.getElementById('achievementsTableBody');
     tbody.innerHTML = '';
-    achievementsList.forEach(ach => {
-      const unlocked = (ach.id === 'stage_1_clear' && this.user.unlockedStage > 1) || !!this.user.achievements[ach.id];
+    list.forEach(a => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><strong style="color:${unlocked?'var(--gold)':'#9ca3af'};">${ach.name}</strong><div style="font-size:0.75rem; color:#9ca3af;">稱號：${ach.badge}</div></td>
-        <td style="font-size:0.85rem;">${ach.desc}</td>
-        <td>${unlocked ? '<span class="badge badge-gold">已解鎖</span>' : '<span class="badge" style="background:#374151; color:#9ca3af;">未達成</span>'}</td>
+        <td><strong>${a.name}</strong><div style="font-size:0.75rem; color:#9ca3af;">${a.badge}</div></td>
+        <td>${a.desc}</td>
+        <td><span class="badge ${a.unlocked ? 'badge-gold' : 'badge-cyan'}">${a.unlocked ? '已解鎖' : '未達成'}</span></td>
       `;
       tbody.appendChild(tr);
     });
     this.openModal('achievements');
   }
 
-  log(msg, className = '') {
+  log(msg, cls = '') {
     const p = document.createElement('div');
-    p.className = `log-entry ${className}`;
+    p.className = `log-entry ${cls}`;
     p.textContent = `> ${msg}`;
     this.combatLog.appendChild(p);
     this.combatLog.scrollTop = this.combatLog.scrollHeight;
