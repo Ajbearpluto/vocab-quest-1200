@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>國小1200單字冒險：記憶之梯 (獨立多暱稱 & iPad雙人對抗版)</title>
+  <title>國小1200單字冒險：記憶之梯 (教師後台 & 雙人對戰版)</title>
   <style>
     :root {
       --bg-dark: #0d1117;
@@ -129,6 +129,11 @@
       color: #fff;
     }
 
+    .btn-success {
+      background: linear-gradient(135deg, #059669, #047857);
+      border-color: var(--green);
+    }
+
     .btn-danger {
       background: linear-gradient(135deg, #dc2626, #991b1b);
       border-color: var(--red);
@@ -138,6 +143,7 @@
       padding: 6px 12px;
       font-size: 0.85rem;
       min-height: 36px;
+      border-radius: 6px;
     }
 
     .btn:disabled {
@@ -153,6 +159,8 @@
       padding: 10px 16px;
       background: #111827;
       border-bottom: 1px solid var(--border-color);
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .current-user-badge {
@@ -303,19 +311,20 @@
       overflow: hidden;
     }
 
-    /* Word Prompt Card */
+    /* Word Prompt Card (無洩題設計) */
     .word-prompt-card {
       background: var(--bg-panel);
       border: 2px solid var(--cyan);
       box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
       border-radius: 12px;
-      padding: 16px;
+      padding: 18px;
       text-align: center;
       margin-bottom: 12px;
+      position: relative;
     }
 
     .prompt-word {
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: 800;
       letter-spacing: 1px;
       color: #38bdf8;
@@ -326,13 +335,13 @@
       font-size: 0.95rem;
       color: var(--text-muted);
       font-family: monospace;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .prompt-sentence {
-      font-size: 1rem;
+      font-size: 1.05rem;
       color: #e2e8f0;
-      line-height: 1.4;
+      line-height: 1.5;
       font-style: italic;
     }
 
@@ -342,7 +351,18 @@
       text-decoration: underline;
     }
 
-    /* Options Grid (Optimized for iPad touch reach) */
+    /* 答題後解析反饋區 (答題前嚴格隱藏) */
+    .answer-feedback-box {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      animation: fadeIn 0.2s ease;
+    }
+
+    /* Options Grid */
     .options-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -430,99 +450,159 @@
     .log-gold { color: #fbbf24; }
 
     /* =========================================================================
-       iPad 雙人同屏對決模式樣式 (1v1 Dual Arena)
+       iPad 雙人同屏 PK 樣式 (直式螢幕上下對切 · 面對面 180° 對決)
        ========================================================================= */
+    .game-container.dual-fullscreen-mode {
+      max-width: 100%;
+      min-height: 98vh;
+      border: none;
+      box-shadow: none;
+      padding: 6px;
+    }
+
     .dual-arena {
       display: flex;
       flex-direction: column;
       height: 100%;
       flex: 1;
-      gap: 12px;
-    }
-
-    .dual-arena-header {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      background: var(--bg-panel);
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-      gap: 12px;
-    }
-
-    .player-corner {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .player-corner.blue { text-align: left; }
-    .player-corner.red { text-align: right; }
-
-    .dual-prompt-box {
-      background: radial-gradient(circle at center, #1e293b, #0f172a);
-      border: 2px solid var(--gold);
-      border-radius: 12px;
-      padding: 14px;
-      text-align: center;
-    }
-
-    .dual-panels-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      flex: 1;
-    }
-
-    @media (max-width: 650px) {
-      .dual-panels-container {
-        grid-template-columns: 1fr;
-      }
+      justify-content: space-between;
+      gap: 8px;
     }
 
     .dual-player-deck {
       background: var(--bg-panel);
-      border-radius: 12px;
-      padding: 12px;
+      border-radius: 14px;
+      padding: 10px 14px;
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
       border: 2px solid transparent;
+      flex: 1;
+      transition: transform 0.3s ease, border-color 0.2s, box-shadow 0.2s;
+      position: relative;
     }
 
     .dual-player-deck.blue {
       border-color: #3b82f6;
-      background: linear-gradient(180deg, #1e3a8a15, #161b22);
+      background: linear-gradient(180deg, #1e3a8a25, #0f172a);
     }
 
     .dual-player-deck.red {
       border-color: #ef4444;
-      background: linear-gradient(180deg, #7f1d1d15, #161b22);
+      background: linear-gradient(180deg, #7f1d1d25, #0f172a);
     }
 
-    .dual-options-column {
+    /* 頂部玩家面對面 180° 倒轉模式 */
+    .dual-player-deck.top-player.rotated {
+      transform: rotate(180deg);
+    }
+
+    /* 攻擊震動受傷動畫 */
+    @keyframes shakeDamage {
+      0% { transform: translate(0, 0); }
+      20% { transform: translate(-6px, 4px); }
+      40% { transform: translate(6px, -4px); }
+      60% { transform: translate(-4px, 2px); }
+      80% { transform: translate(4px, -2px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    @keyframes shakeDamageRotated {
+      0% { transform: rotate(180deg) translate(0, 0); }
+      20% { transform: rotate(180deg) translate(-6px, 4px); }
+      40% { transform: rotate(180deg) translate(6px, -4px); }
+      60% { transform: rotate(180deg) translate(-4px, 2px); }
+      80% { transform: rotate(180deg) translate(4px, -2px); }
+      100% { transform: rotate(180deg) translate(0, 0); }
+    }
+
+    .dual-player-deck.deck-damage {
+      animation: shakeDamage 0.35s ease;
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.7);
+    }
+
+    .dual-player-deck.top-player.rotated.deck-damage {
+      animation: shakeDamageRotated 0.35s ease;
+    }
+
+    .dual-deck-header {
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 6px;
+    }
+
+    .dual-prompt-box {
+      background: radial-gradient(circle at center, #1e293b, #090d16);
+      border: 1.5px solid var(--gold);
+      border-radius: 10px;
+      padding: 8px 12px;
+      text-align: center;
+      margin: 4px 0;
+    }
+
+    .dual-word-main {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #38bdf8;
+      line-height: 1.2;
+      letter-spacing: 0.5px;
+    }
+
+    .dual-word-sub {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 2px;
+    }
+
+    .dual-sentence {
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      font-style: italic;
+    }
+
+    .dual-options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-top: 8px;
-      flex: 1;
-      justify-content: center;
+      margin-top: 4px;
     }
 
     .dual-opt-btn {
-      padding: 14px 10px;
+      padding: 10px 8px;
       border-radius: 8px;
       border: 1px solid var(--border-color);
       background: #1f2937;
       color: #fff;
-      font-size: 1rem;
-      font-weight: 600;
+      font-size: 1.05rem;
+      font-weight: 700;
       cursor: pointer;
       text-align: center;
-      min-height: 52px;
+      min-height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: all 0.12s;
+      touch-action: manipulation;
+    }
+
+    .dual-opt-btn:active {
+      transform: scale(0.96);
+      background: #374151;
+    }
+
+    /* 中間裁判分隔條 */
+    .dual-divider-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #090d16;
+      border-top: 1px dashed #334155;
+      border-bottom: 1px dashed #334155;
+      padding: 6px 12px;
+      border-radius: 6px;
+      gap: 8px;
     }
 
     /* Modals & Overlays */
@@ -547,7 +627,7 @@
       background: var(--bg-card);
       border: 2px solid var(--border-color);
       border-radius: 14px;
-      max-width: 580px;
+      max-width: 600px;
       width: 100%;
       padding: 24px;
       box-shadow: 0 15px 40px rgba(0,0,0,0.9);
@@ -649,7 +729,6 @@
       font-weight: 600;
     }
 
-    /* Saved Profile Slots */
     .profile-slot-card {
       display: flex;
       justify-content: space-between;
@@ -661,8 +740,27 @@
       margin-bottom: 8px;
     }
 
-    .profile-slot-card:hover {
-      border-color: var(--cyan);
+    /* Teacher Dashboard Stats Grid */
+    .teacher-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .teacher-summary-card {
+      background: #111827;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+
+    .teacher-summary-val {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--cyan);
+      margin-top: 4px;
     }
 
     .table-container {
@@ -708,14 +806,17 @@
 <body>
 
 <div class="game-container">
-  <!-- 頂端導航條 -->
+  <!-- 頂部工具條 (含教師後台入口與身分切換) -->
   <div class="top-utility-bar">
     <div class="current-user-badge" id="btnSwitchUserTop" title="切換其他勇者身分">
-      <span>👤 當前勇者：</span>
+      <span>👤 勇者：</span>
       <strong id="topBarNickname" style="color:#fff;">未登入</strong>
-      <span style="font-size: 0.75rem; color: #9ca3af;">(切換身分)</span>
+      <span style="font-size: 0.75rem; color: #9ca3af;">(切換)</span>
     </div>
     <div style="display: flex; gap: 8px; align-items: center;">
+      <button class="btn btn-sm btn-success" id="btnOpenTeacherAdmin" title="查看全班成績總覽">
+        👨‍🏫 教師後台
+      </button>
       <button class="sound-toggle" id="soundToggle" style="background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;" title="音效開關">🔊</button>
     </div>
   </div>
@@ -729,9 +830,9 @@
       <div style="font-size: 3rem; margin-bottom: 8px;">🛡️👤✨</div>
       <h3 style="margin-bottom: 6px; color: #38bdf8;">輸入勇者暱稱</h3>
       <p style="font-size: 0.85rem; color: #9ca3af; margin-bottom: 16px; line-height: 1.5;">
-        ⚠️ <strong>存檔完全獨立規則</strong>：<br>
+        ⚠️ <strong>獨立存檔規則</strong>：<br>
         輸入<strong>全新暱稱</strong>，將<strong>從第 1 關全新開始</strong>！<br>
-        輸入<strong>已有暱稱</strong>，則<strong>讀取該勇者專屬歷史進度</strong>。
+        輸入<strong>已有暱稱</strong>，則<strong>讀取該勇者歷史進度</strong>。
       </p>
 
       <div style="display: flex; gap: 8px; margin-bottom: 16px;">
@@ -739,14 +840,12 @@
         <button class="btn btn-primary" id="btnEnterGame" style="white-space: nowrap;">進入遊戲</button>
       </div>
 
-      <!-- 已存檔名冊 (點擊直接切換) -->
+      <!-- 已存檔名冊 -->
       <div id="savedAccountsContainer" style="text-align: left; margin-top: 20px;">
         <div style="font-size: 0.82rem; color: var(--gold); font-weight: 700; margin-bottom: 8px;">
           📜 本機已保存的勇者存檔 (點擊繼續)：
         </div>
-        <div id="savedAccountsList" style="max-height: 220px; overflow-y: auto;">
-          <!-- Populated by JS -->
-        </div>
+        <div id="savedAccountsList" style="max-height: 220px; overflow-y: auto;"></div>
       </div>
     </div>
   </div>
@@ -813,6 +912,7 @@
       <button class="btn" id="btnOpenGrimoire" style="font-size: 0.9rem; padding: 10px 16px;">📖 記憶魔典</button>
       <button class="btn" id="btnOpenLeaderboard" style="font-size: 0.9rem; padding: 10px 16px;">🏆 勇者排行榜</button>
       <button class="btn" id="btnOpenAchievements" style="font-size: 0.9rem; padding: 10px 16px;">🎖️ 稱號成就</button>
+      <button class="btn btn-success" id="btnOpenTeacherAdminMenu" style="font-size: 0.9rem; padding: 10px 16px;">👨‍🏫 教師後台</button>
     </div>
 
     <div style="text-align: center;">
@@ -822,7 +922,7 @@
     </div>
   </div>
 
-  <!-- SCREEN 3: 核心單人闖關畫面 -->
+  <!-- SCREEN 3: 核心單人闖關畫面 (已修正：無洩題) -->
   <div id="screenGame" class="screen">
     <!-- Top HUD -->
     <div class="hud-bar">
@@ -902,17 +1002,18 @@
       </div>
     </div>
 
-    <!-- 題卡區域 -->
+    <!-- 題卡區域 (作答前僅顯示英文與空格，絕無洩漏答案) -->
     <div class="word-prompt-card">
       <div class="prompt-word" id="promptWord">afraid</div>
       <div class="prompt-phonetic" id="promptPhonetic">[əˈfreɪd] · adj.</div>
       <div class="prompt-sentence" id="promptSentence">
         The little boy is <span class="blank">______</span> of the dark.
-        <div style="font-size: 0.85rem; color: #9ca3af; margin-top: 4px;">(小男孩非常害怕黑暗。)</div>
       </div>
+      <!-- 答題後解析提示 (答題前嚴格隱藏) -->
+      <div class="answer-feedback-box" id="answerFeedbackBox"></div>
     </div>
 
-    <!-- 選項按鈕 (支援觸控高命中) -->
+    <!-- 選項按鈕 -->
     <div class="options-grid" id="optionsGrid"></div>
 
     <!-- 技能欄 -->
@@ -929,67 +1030,155 @@
   </div>
 
   <!-- SCREEN 4: iPad 雙人同屏 PK 畫面 -->
+  <!-- SCREEN 4: iPad 雙人同屏 PK 畫面 (直式螢幕上下對切 · 獨立面向顯示) -->
   <div id="screenDual" class="screen">
     <div class="dual-arena">
-      <div class="dual-arena-header">
-        <div class="player-corner blue">
-          <div style="font-weight:700; color:#60a5fa;" id="dualP1Name">🔵 藍隊勇者</div>
-          <div style="font-size:0.8rem; color:#9ca3af;">城堡生命：<span id="dualP1Hp" style="color:#60a5fa; font-weight:700;">100</span> HP</div>
-          <div class="progress-bar-bg" style="width: 100px;">
-            <div id="dualP1HpBar" class="progress-bar-fill" style="width:100%; background:#3b82f6;"></div>
+      <!-- TOP PLAYER: 紅隊 (P2，面對面模式時自動旋轉 180 度，正向朝向對桌學生) -->
+      <div class="dual-player-deck red top-player rotated" id="dualDeckP2">
+        <div class="dual-prompt-box">
+          <div class="dual-word-main" id="dualPromptWordP2">afraid</div>
+          <div class="dual-word-sub">
+            <span id="dualPromptPhoneticP2">[əˈfred]</span>
+            <span id="dualPromptPosP2" class="badge badge-purple" style="margin-left:4px;">adj.</span>
           </div>
+          <div class="dual-sentence" id="dualPromptSentenceP2">The boy is <span class="blank">______</span> of dark.</div>
         </div>
 
-        <div style="text-align: center;">
-          <div style="font-size: 1.1rem; font-weight: 800; color: var(--gold);">⚔️ VS ⚔️</div>
-          <div style="font-size: 0.75rem; color: var(--text-muted);" id="dualRoundText">第 1 / 10 回合</div>
-        </div>
+        <div class="dual-options-grid" id="dualOptionsP2"></div>
 
-        <div class="player-corner red">
-          <div style="font-weight:700; color:#f87171;" id="dualP2Name">🔴 紅隊勇者</div>
-          <div style="font-size:0.8rem; color:#9ca3af;">城堡生命：<span id="dualP2Hp" style="color:#f87171; font-weight:700;">100</span> HP</div>
-          <div class="progress-bar-bg" style="width: 100px; margin-left: auto;">
-            <div id="dualP2HpBar" class="progress-bar-fill" style="width:100%; background:#ef4444;"></div>
+        <div class="dual-deck-header">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-weight:700; color:#f87171; font-size:0.95rem;" id="dualP2Name">🔴 紅隊勇者 (P2)</span>
+            <span class="badge" style="background:#7f1d1d; color:#fecaca; font-size:0.7rem;">頂部操作</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:0.8rem; color:#9ca3af;">城堡 HP: <strong id="dualP2Hp" style="color:#f87171;">100</strong></span>
+            <div class="progress-bar-bg" style="width: 95px; height: 8px;">
+              <div id="dualP2HpBar" class="progress-bar-fill" style="width:100%; background:#ef4444;"></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="dual-prompt-box">
-        <div style="font-size: 0.8rem; color: var(--gold); font-weight: 700;">🎯 極速搶答單字</div>
-        <div id="dualPromptWord" style="font-size: 2.2rem; font-weight: 800; color: #38bdf8; margin: 4px 0;">afraid</div>
-        <div id="dualPromptSentence" style="font-size: 0.95rem; color: #e2e8f0; font-style: italic;">
-          The boy is <span style="color:var(--gold); font-weight:700;">______</span> of dark.
-        </div>
-      </div>
-
-      <div class="dual-panels-container">
-        <div class="dual-player-deck blue">
-          <div style="text-align:center; font-size:0.85rem; font-weight:700; color:#60a5fa; margin-bottom:4px;">
-            🔵 藍方操作區 (搶先點擊正解)
-          </div>
-          <div class="dual-options-column" id="dualOptionsP1"></div>
-        </div>
-
-        <div class="dual-player-deck red">
-          <div style="text-align:center; font-size:0.85rem; font-weight:700; color:#f87171; margin-bottom:4px;">
-            🔴 紅方操作區 (搶先點擊正解)
-          </div>
-          <div class="dual-options-column" id="dualOptionsP2"></div>
-        </div>
-      </div>
-
-      <div style="display:flex; justify-content:center;">
-        <button class="btn" style="font-size:0.85rem; padding:6px 16px; min-height:36px;" id="btnQuitDual">
-          放棄對決返回首頁
+      <!-- CENTER DIVIDER: 中間裁判分隔條 (回合、方向視角切換、結束對決) -->
+      <div class="dual-divider-bar">
+        <button class="btn btn-sm" id="btnToggleDualOrientation" style="font-size:0.78rem; padding:4px 10px; background:#1e293b; border-color:#475569; color:#38bdf8;" title="點擊切換面對面倒轉或並排同向">
+          🔄 視角：面對面 (180°倒轉)
         </button>
+        <div id="dualRoundText" style="font-size:0.88rem; font-weight:800; color:var(--gold); letter-spacing:0.5px;">
+          ⚔️ 第 1 / 10 回合 ⚔️
+        </div>
+        <button class="btn btn-sm btn-danger" id="btnQuitDual" style="font-size:0.78rem; padding:4px 10px;">
+          ✕ 結束對戰
+        </button>
+      </div>
+
+      <!-- BOTTOM PLAYER: 藍隊 (P1，正向朝向下桌學生) -->
+      <div class="dual-player-deck blue bottom-player" id="dualDeckP1">
+        <div class="dual-prompt-box">
+          <div class="dual-word-main" id="dualPromptWordP1">afraid</div>
+          <div class="dual-word-sub">
+            <span id="dualPromptPhoneticP1">[əˈfred]</span>
+            <span id="dualPromptPosP1" class="badge badge-purple" style="margin-left:4px;">adj.</span>
+          </div>
+          <div class="dual-sentence" id="dualPromptSentenceP1">The boy is <span class="blank">______</span> of dark.</div>
+        </div>
+
+        <div class="dual-options-grid" id="dualOptionsP1"></div>
+
+        <div class="dual-deck-header">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-weight:700; color:#60a5fa; font-size:0.95rem;" id="dualP1Name">🔵 藍隊勇者 (P1)</span>
+            <span class="badge" style="background:#1e3a8a; color:#bfdbfe; font-size:0.7rem;">底部操作</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:0.8rem; color:#9ca3af;">城堡 HP: <strong id="dualP1Hp" style="color:#60a5fa;">100</strong></span>
+            <div class="progress-bar-bg" style="width: 95px; height: 8px;">
+              <div id="dualP1HpBar" class="progress-bar-fill" style="width:100%; background:#3b82f6;"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MODALS -->
+<!-- =========================================================================
+     MODAL 0: 【全新】👨‍🏫 教師管理後台 (全班成績與過關紀錄一目了然)
+     ========================================================================= -->
+<div class="modal-overlay" id="modalTeacherAdmin">
+  <div class="modal-card" style="max-width: 760px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+      <h2 style="color: #34d399; margin: 0;">👨‍🏫 教師成績管理後台</h2>
+      <span class="badge badge-gold">全班學習紀錄儀表板</span>
+    </div>
+    <div class="subtitle" style="margin-bottom: 14px; text-align:left;">
+      即時檢視所有學生的關卡推進、獲得星數與單字記憶階梯，支援一鍵下載 Excel 報表！
+    </div>
 
-<!-- 1. 關卡地圖 -->
+    <!-- 核心指標數據看板 -->
+    <div class="teacher-summary-grid">
+      <div class="teacher-summary-card">
+        <div style="font-size:0.75rem; color:#9ca3af;">總受測學生</div>
+        <div class="teacher-summary-val" id="tSummaryStudents">0 人</div>
+      </div>
+      <div class="teacher-summary-card">
+        <div style="font-size:0.75rem; color:#9ca3af;">平均推進關卡</div>
+        <div class="teacher-summary-val" id="tSummaryAvgStage">第 1 關</div>
+      </div>
+      <div class="teacher-summary-card">
+        <div style="font-size:0.75rem; color:#9ca3af;">全班累積總星數</div>
+        <div class="teacher-summary-val" style="color:var(--gold);" id="tSummaryStars">⭐ 0</div>
+      </div>
+      <div class="teacher-summary-card">
+        <div style="font-size:0.75rem; color:#9ca3af;">階梯5登頂單字</div>
+        <div class="teacher-summary-val" style="color:#f472b6;" id="tSummaryMastered">0 字</div>
+      </div>
+    </div>
+
+    <!-- 匯出與工具按鈕列 -->
+    <div style="display:flex; gap:8px; margin-bottom: 12px; flex-wrap:wrap;">
+      <button class="btn btn-sm btn-primary" id="btnExportCSV">📥 匯出 Excel (CSV) 檔</button>
+      <button class="btn btn-sm" id="btnCopyGradeSummary">📋 一鍵複製文字報表</button>
+      <button class="btn btn-sm btn-danger" id="btnClearAllClassData" style="margin-left:auto;">🗑️ 清除全班測試資料</button>
+    </div>
+
+    <!-- 雲端 Webhook 自動同步設定 (可選) -->
+    <div style="background:#111827; border:1px solid var(--border-color); border-radius:8px; padding:10px 14px; margin-bottom:12px;">
+      <div style="font-size:0.8rem; color:var(--cyan); font-weight:700; margin-bottom:4px;">
+        🌐 跨 iPad 雲端即時同步設定 (Google 試算表 Webhook，選填)
+      </div>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="inputWebhookUrl" placeholder="貼上 Google Apps Script 接收網址 (學生過關時自動傳回試算表)..." style="flex:1; padding:8px; background:#0d1117; border:1px solid #374151; border-radius:6px; color:#fff; font-size:0.82rem;">
+        <button class="btn btn-sm btn-primary" id="btnSaveWebhookUrl">保存網址</button>
+      </div>
+    </div>
+
+    <!-- 全班成績一覽表 -->
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>名次</th>
+            <th>學生姓名 / 學號</th>
+            <th>解鎖最高關卡</th>
+            <th>獲得星數</th>
+            <th>各關通關紀錄明細</th>
+            <th>精通單字</th>
+            <th>最高得分</th>
+          </tr>
+        </thead>
+        <tbody id="teacherTableBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" id="btnCloseTeacherAdmin">關閉後台</button>
+  </div>
+</div>
+
+<!-- MODAL 1: 關卡地圖 -->
 <div class="modal-overlay" id="modalStageMap">
   <div class="modal-card" style="max-width: 720px;">
     <h2 style="color: var(--cyan); margin-bottom: 6px;">🗺️ 冒險王國地圖 (60 關)</h2>
@@ -1000,7 +1189,7 @@
   </div>
 </div>
 
-<!-- 2. 通關勝利結算 -->
+<!-- MODAL 2: 關卡通關勝利結算 -->
 <div class="modal-overlay" id="modalStageClear">
   <div class="modal-card victory-card">
     <div class="victory-title">🎉 關卡通關 (STAGE CLEAR)</div>
@@ -1024,7 +1213,7 @@
   </div>
 </div>
 
-<!-- 3. 雙人對決獲勝彈窗 -->
+<!-- MODAL 3: 雙人對決獲勝彈窗 -->
 <div class="modal-overlay" id="modalDualVictory">
   <div class="modal-card victory-card">
     <div class="victory-title" id="dualWinnerTitle">🏆 藍隊勇者 獲勝！</div>
@@ -1039,7 +1228,7 @@
   </div>
 </div>
 
-<!-- 4. Game Over 彈窗 -->
+<!-- MODAL 4: Game Over 彈窗 -->
 <div class="modal-overlay" id="modalGameOver">
   <div class="modal-card gameover-card">
     <div class="gameover-title" id="gameOverTitle">💀 意識湮滅 (GAME OVER)</div>
@@ -1059,7 +1248,7 @@
   </div>
 </div>
 
-<!-- 5. 記憶魔典 -->
+<!-- MODAL 5: 記憶魔典 -->
 <div class="modal-overlay" id="modalGrimoire">
   <div class="modal-card" style="max-width: 680px;">
     <h2 style="color: var(--gold); margin-bottom: 6px;">📖 古老記憶魔典</h2>
@@ -1076,7 +1265,7 @@
   </div>
 </div>
 
-<!-- 6. 排行榜 -->
+<!-- MODAL 6: 排行榜 -->
 <div class="modal-overlay" id="modalLeaderboard">
   <div class="modal-card">
     <h2 style="color: #38bdf8; margin-bottom: 6px;">🏆 勇者排行榜</h2>
@@ -1093,7 +1282,7 @@
   </div>
 </div>
 
-<!-- 7. 成就 -->
+<!-- MODAL 7: 成就 -->
 <div class="modal-overlay" id="modalAchievements">
   <div class="modal-card">
     <h2 style="color: var(--purple); margin-bottom: 6px;">🎖️ 冒險成就與稱號</h2>
@@ -1111,8 +1300,7 @@
 <script>
 /**
  * =========================================================================
- * 國小 1200 單字冒險：記憶之梯 (獨立多存檔架構)
- * 核心保證：不同暱稱 = 絕對獨立全新的 60 關進度與記憶階梯！
+ * 國小 1200 單字冒險：記憶之梯 (教師管理後台 & 答題無洩漏版)
  * =========================================================================
  */
 
@@ -1126,7 +1314,7 @@ const WORLDS = [
   { id: 6, name: "星空殿堂", desc: "高等詞彙 · 情感、抽象思維與世界交流", range: [51, 60] }
 ];
 
-// 2. 教育部 1200 基本單字庫
+// 2. 教育部 1200 基本單字庫 (包含純英文情境挖空例句)
 const CURATED_STAGE_WORDS = {
   1: [
     { id: "a_lot", word: "a lot", phonetic: "[ə lɑt]", pos: "phr.", def: "許多、大量", sentence: "He has <span class='blank'>______</span> of toys.", distractors: ["一些", "很少", "幾個"] },
@@ -1190,7 +1378,7 @@ function getStageWordList(stageNum) {
     { word: "question", def: "問題", pos: "n.", phonetic: "[ˈkwɛstʃən]", sentence: "I have a simple <span class='blank'>______</span>." },
     { word: "rainbow", def: "彩虹", pos: "n.", phonetic: "[ˈrenˌbo]", sentence: "Look at the colorful <span class='blank'>______</span>." },
     { word: "school", def: "學校", pos: "n.", phonetic: "[skul]", sentence: "We love our friendly <span class='blank'>______</span>." },
-    { word: "teacher", def: "老師", pos: "n.", phonetic: "[ˈtitʃɚ]", sentence: "Our English <span class='blank'>______</span> is nice." },
+    { word: "teacher", def: "老師", pos: "n.", phonetic: "[ˈtitʃɚ]", sentence: "Our English <span class='blank'>______</span> is kind." },
     { word: "umbrella", def: "雨傘", pos: "n.", phonetic: "[ʌmˈbrɛlə]", sentence: "Open your rain <span class='blank'>______</span>." },
     { word: "winter", def: "冬天", pos: "n.", phonetic: "[ˈwɪntɚ]", sentence: "Wear gloves in snowy <span class='blank'>______</span>." },
     { word: "yellow", def: "黃色(的)", pos: "adj.", phonetic: "[ˈjɛlo]", sentence: "The sunflower is bright <span class='blank'>______</span>." },
@@ -1272,10 +1460,11 @@ class SoundSystem {
   }
 }
 
-// 4. 【核心關鍵】獨立帳號多存檔管理器 (Account Database Manager)
+// 4. 獨立帳號多存檔管理器 (含雲端 Webhook 同步)
 class AccountManager {
   static STORAGE_KEY = 'vocab_accounts_v2';
   static ACTIVE_KEY = 'vocab_active_user_v2';
+  static WEBHOOK_KEY = 'vocab_teacher_webhook_url';
 
   static getAllAccounts() {
     try {
@@ -1298,10 +1487,6 @@ class AccountManager {
     localStorage.removeItem(this.ACTIVE_KEY);
   }
 
-  /**
-   * 登入或建立勇者存檔
-   * 核心保證：如果是全新暱稱，絕對是【全新第 1 關】初始狀態！
-   */
   static loginOrCreate(nickname) {
     const name = nickname.trim();
     const accounts = this.getAllAccounts();
@@ -1310,14 +1495,17 @@ class AccountManager {
       // 🌟 全新暱稱 -> 100% 全新開始！
       accounts[name] = {
         nickname: name,
-        unlockedStage: 1,      // 永遠從第 1 關開始！
+        unlockedStage: 1,
         lastPlayedStage: 1,
-        stageRecords: {},      // 0 顆星！
-        memoryLadderMap: {},   // 乾淨的階梯記錄！
+        stageRecords: {},
+        memoryLadderMap: {},
         highScore: 0,
         dailyHighScore: 0,
-        createdTime: Date.now()
+        lastActiveTime: new Date().toLocaleString()
       };
+      this.saveAllAccounts(accounts);
+    } else {
+      accounts[name].lastActiveTime = new Date().toLocaleString();
       this.saveAllAccounts(accounts);
     }
 
@@ -1327,6 +1515,7 @@ class AccountManager {
 
   static saveUser(userObj) {
     const accounts = this.getAllAccounts();
+    userObj.lastActiveTime = new Date().toLocaleString();
     accounts[userObj.nickname] = userObj;
     this.saveAllAccounts(accounts);
   }
@@ -1338,6 +1527,33 @@ class AccountManager {
     if (localStorage.getItem(this.ACTIVE_KEY) === name) {
       this.logout();
     }
+  }
+
+  static clearAll() {
+    localStorage.removeItem(this.STORAGE_KEY);
+    localStorage.removeItem(this.ACTIVE_KEY);
+  }
+
+  static getWebhookUrl() {
+    return localStorage.getItem(this.WEBHOOK_KEY) || '';
+  }
+
+  static setWebhookUrl(url) {
+    localStorage.setItem(this.WEBHOOK_KEY, url.trim());
+  }
+
+  // 跨裝置背景非同步發送成積至 Google 試算表 Webhook
+  static sendScoreToWebhook(record) {
+    const url = this.getWebhookUrl();
+    if (!url) return;
+    try {
+      fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(record)
+      }).catch(e => console.warn("Webhook fetch failed:", e));
+    } catch(e) {}
   }
 }
 
@@ -1353,6 +1569,7 @@ class VocabGame {
     this.currentMonster = null;
     this.activeWorldTab = 1;
     this.dualState = null;
+    this.isDualFaceToFace = true;
 
     this.initDOM();
     this.bindEvents();
@@ -1385,7 +1602,8 @@ class VocabGame {
       grimoire: document.getElementById('modalGrimoire'),
       leaderboard: document.getElementById('modalLeaderboard'),
       achievements: document.getElementById('modalAchievements'),
-      dualVictory: document.getElementById('modalDualVictory')
+      dualVictory: document.getElementById('modalDualVictory'),
+      teacherAdmin: document.getElementById('modalTeacherAdmin')
     };
 
     this.hud = {
@@ -1416,6 +1634,7 @@ class VocabGame {
     this.promptWord = document.getElementById('promptWord');
     this.promptPhonetic = document.getElementById('promptPhonetic');
     this.promptSentence = document.getElementById('promptSentence');
+    this.answerFeedbackBox = document.getElementById('answerFeedbackBox');
     this.optionsGrid = document.getElementById('optionsGrid');
     this.combatLog = document.getElementById('combatLog');
   }
@@ -1426,13 +1645,13 @@ class VocabGame {
       document.getElementById('soundToggle').textContent = this.sound.enabled ? '🔊' : '🔇';
     };
 
-    // 登入驗證
+    // 登入
     document.getElementById('btnEnterGame').onclick = () => this.handleAuth();
     document.getElementById('nicknameInput').onkeyup = (e) => {
       if (e.key === 'Enter') this.handleAuth();
     };
 
-    // 切換身分按鈕 (頂部與選單底部)
+    // 切換身分
     const doSwitchUser = () => {
       AccountManager.logout();
       this.user = null;
@@ -1443,15 +1662,29 @@ class VocabGame {
     document.getElementById('btnSwitchUserTop').onclick = doSwitchUser;
     document.getElementById('btnSwitchUserBottom').onclick = doSwitchUser;
 
-    // 主選單按鈕
+    // 主選單
     document.getElementById('btnResumeNextStage').onclick = () => {
       this.startStage(this.user.unlockedStage || 1);
     };
     document.getElementById('btnOpenStageMap').onclick = () => this.openStageMapModal();
     document.getElementById('btnCloseStageMap').onclick = () => this.closeModal('stageMap');
 
-    // 雙人 PK 模式
+    // 雙人 PK
     document.getElementById('btnStartDualPK').onclick = () => this.startDualBattle();
+    document.getElementById('btnToggleDualOrientation').onclick = () => {
+      this.isDualFaceToFace = !this.isDualFaceToFace;
+      const deckP2 = document.getElementById('dualDeckP2');
+      const btn = document.getElementById('btnToggleDualOrientation');
+      if (this.isDualFaceToFace) {
+        deckP2.classList.add('rotated');
+        btn.innerHTML = '🔄 視角：面對面 (180°倒轉)';
+        btn.style.color = '#38bdf8';
+      } else {
+        deckP2.classList.remove('rotated');
+        btn.innerHTML = '🔄 視角：並排同向 (0°雙方正向)';
+        btn.style.color = '#a7f3d0';
+      }
+    };
     document.getElementById('btnQuitDual').onclick = () => {
       if (confirm("確定放棄雙人對決返回主選單？")) {
         this.updateMenuUI();
@@ -1468,18 +1701,40 @@ class VocabGame {
       this.switchScreen('menu');
     };
 
-    // 單人戰鬥技能
+    // 教師後台按鈕
+    const openTeacher = () => this.openTeacherAdminModal();
+    document.getElementById('btnOpenTeacherAdmin').onclick = openTeacher;
+    document.getElementById('btnOpenTeacherAdminMenu').onclick = openTeacher;
+    document.getElementById('btnCloseTeacherAdmin').onclick = () => this.closeModal('teacherAdmin');
+    document.getElementById('btnExportCSV').onclick = () => this.exportGradebookCSV();
+    document.getElementById('btnCopyGradeSummary').onclick = () => this.copyGradeSummaryText();
+    document.getElementById('btnSaveWebhookUrl').onclick = () => {
+      const url = document.getElementById('inputWebhookUrl').value;
+      AccountManager.setWebhookUrl(url);
+      alert("✅ 雲端 Google 試算表 Webhook 網址已保存！學生通關時將自動回傳紀錄。");
+    };
+    document.getElementById('btnClearAllClassData').onclick = () => {
+      if (confirm("⚠️ 警告：這將徹底清空本機所有學生的存檔資料！確定執行嗎？")) {
+        AccountManager.clearAll();
+        this.user = null;
+        this.closeModal('teacherAdmin');
+        this.renderSavedAccounts();
+        this.switchScreen('auth');
+      }
+    };
+
+    // 戰鬥技能
     document.getElementById('btnSkillErase').onclick = () => this.useSkillErase();
     document.getElementById('btnSkillHeal').onclick = () => this.useSkillHeal();
     document.getElementById('btnSkillFocus').onclick = () => this.useSkillFocus();
     document.getElementById('btnFleeStage').onclick = () => {
-      if (confirm("暫時撤退回主選單嗎？本關進度不會被記錄。")) {
+      if (confirm("暫時撤退回主選單嗎？")) {
         this.updateMenuUI();
         this.switchScreen('menu');
       }
     };
 
-    // 通關彈窗按鈕
+    // 通關彈窗
     document.getElementById('btnNextStage').onclick = () => {
       this.closeModal('stageClear');
       this.startStage(this.currentStageNum + 1);
@@ -1496,7 +1751,7 @@ class VocabGame {
       this.switchScreen('menu');
     };
 
-    // 失敗結算按鈕
+    // 失敗彈窗
     document.getElementById('btnRevive').onclick = () => this.handleRevive();
     document.getElementById('btnRestartGame').onclick = () => {
       this.closeModal('gameOver');
@@ -1520,6 +1775,16 @@ class VocabGame {
   switchScreen(screenKey) {
     Object.values(this.screens).forEach(s => s.classList.remove('active'));
     if (this.screens[screenKey]) this.screens[screenKey].classList.add('active');
+
+    const topBar = document.querySelector('.top-utility-bar');
+    const container = document.querySelector('.game-container');
+    if (screenKey === 'dual') {
+      if (topBar) topBar.style.display = 'none';
+      if (container) container.classList.add('dual-fullscreen-mode');
+    } else {
+      if (topBar) topBar.style.display = 'flex';
+      if (container) container.classList.remove('dual-fullscreen-mode');
+    }
   }
 
   openModal(modalKey) {
@@ -1540,7 +1805,6 @@ class VocabGame {
     }
   }
 
-  // 登入或建立新玩家
   handleAuth() {
     const input = document.getElementById('nicknameInput').value.trim();
     if (!input) {
@@ -1550,10 +1814,9 @@ class VocabGame {
     this.user = AccountManager.loginOrCreate(input);
     this.updateMenuUI();
     this.switchScreen('menu');
-    this.log(`歡迎勇者【${this.user.nickname}】踏入記憶殿堂！當前進度：第 ${this.user.unlockedStage} 關。`, 'log-info');
+    this.log(`歡迎勇者【${this.user.nickname}】！當前進度：第 ${this.user.unlockedStage} 關。`, 'log-info');
   }
 
-  // 渲染已存在的帳號清單
   renderSavedAccounts() {
     const accounts = AccountManager.getAllAccounts();
     const container = document.getElementById('savedAccountsList');
@@ -1591,7 +1854,7 @@ class VocabGame {
     this.user = AccountManager.loginOrCreate(name);
     this.updateMenuUI();
     this.switchScreen('menu');
-    this.log(`讀取勇者【${name}】的專屬存檔！解鎖至第 ${this.user.unlockedStage} 關。`, 'log-info');
+    this.log(`讀取勇者【${name}】專屬存檔！第 ${this.user.unlockedStage} 關。`, 'log-info');
   }
 
   confirmDeleteAccount(name) {
@@ -1628,7 +1891,7 @@ class VocabGame {
   }
 
   // =========================================================================
-  // 單人闖關模式
+  // 單人闖關模式 (已修正：作答前無洩題)
   // =========================================================================
   startStage(stageNum) {
     this.currentStageNum = stageNum;
@@ -1710,6 +1973,7 @@ class VocabGame {
     this.currentWord = weightedList[Math.floor(Math.random() * weightedList.length)];
   }
 
+  // 渲染題卡 (關鍵修復：完全隱藏中文答案，僅顯示英文單字與例句)
   renderQuestion() {
     const wordObj = this.currentWord;
     const currentLadder = (this.user.memoryLadderMap && this.user.memoryLadderMap[wordObj.id]) || 1;
@@ -1728,10 +1992,15 @@ class VocabGame {
     ];
     this.ladderStatusText.textContent = ladderTitles[currentLadder - 1];
 
+    // 題卡更新：純英文顯示，嚴格不透漏中文解答！
     this.promptWord.textContent = wordObj.word;
     this.promptPhonetic.textContent = `${wordObj.phonetic} · ${wordObj.pos}`;
-    this.promptSentence.innerHTML = `${wordObj.sentence} <div style="font-size:0.85rem; color:#9ca3af; margin-top:4px;">(${wordObj.def})</div>`;
+    this.promptSentence.innerHTML = wordObj.sentence;
+    
+    // 隱藏答題反饋箱
+    this.answerFeedbackBox.style.display = 'none';
 
+    // 隨機混淆選項
     const options = [wordObj.def, ...wordObj.distractors];
     options.sort(() => Math.random() - 0.5);
 
@@ -1745,6 +2014,7 @@ class VocabGame {
     });
   }
 
+  // 處理作答：點擊後才給予解析反饋
   handleAnswer(selectedDef, btnElement) {
     const allBtns = this.optionsGrid.querySelectorAll('.option-btn');
     allBtns.forEach(b => b.disabled = true);
@@ -1752,11 +2022,19 @@ class VocabGame {
     const isCorrect = (selectedDef === this.currentWord.def);
     this.gameState.currentQuestionIdx++;
 
+    // 答題後顯示解析反饋
+    this.answerFeedbackBox.style.display = 'block';
+
     if (isCorrect) {
       this.sound.play('correct');
       btnElement.classList.add('correct');
       this.gameState.correctCount++;
       this.gameState.combo++;
+
+      this.answerFeedbackBox.style.background = 'rgba(16, 185, 129, 0.2)';
+      this.answerFeedbackBox.style.color = '#34d399';
+      this.answerFeedbackBox.style.border = '1px solid #10b981';
+      this.answerFeedbackBox.innerHTML = `✅ 答對了！【${this.currentWord.word}】意思是：<strong>${this.currentWord.def}</strong>`;
 
       const prevLvl = (this.user.memoryLadderMap && this.user.memoryLadderMap[this.currentWord.id]) || 1;
       const nextLvl = Math.min(5, prevLvl + 1);
@@ -1780,7 +2058,7 @@ class VocabGame {
       setTimeout(() => {
         this.updateHUD();
         this.spawnStageEncounter();
-      }, 650);
+      }, 750);
 
     } else {
       this.sound.play('wrong');
@@ -1788,9 +2066,15 @@ class VocabGame {
       this.gameState.wrongCount++;
       this.gameState.combo = 0;
 
+      // 高亮正確答案
       allBtns.forEach(b => {
         if (b.innerText.includes(this.currentWord.def)) b.classList.add('correct');
       });
+
+      this.answerFeedbackBox.style.background = 'rgba(239, 68, 68, 0.2)';
+      this.answerFeedbackBox.style.color = '#f87171';
+      this.answerFeedbackBox.style.border = '1px solid #ef4444';
+      this.answerFeedbackBox.innerHTML = `❌ 答錯了！【${this.currentWord.word}】的正確意思是：<strong>${this.currentWord.def}</strong>`;
 
       const prevLvl = (this.user.memoryLadderMap && this.user.memoryLadderMap[this.currentWord.id]) || 1;
       const nextLvl = Math.max(1, prevLvl - 1);
@@ -1807,7 +2091,7 @@ class VocabGame {
         } else {
           this.spawnStageEncounter();
         }
-      }, 1100);
+      }, 1300);
     }
 
     AccountManager.saveUser(this.user);
@@ -1834,6 +2118,16 @@ class VocabGame {
       this.user.unlockedStage = this.currentStageNum + 1;
     }
     AccountManager.saveUser(this.user);
+
+    // 雲端 Webhook 自動同步傳送
+    AccountManager.sendScoreToWebhook({
+      studentName: this.user.nickname,
+      stage: this.currentStageNum,
+      stars: stars,
+      accuracy: `${accuracy}%`,
+      score: this.gameState.score,
+      timestamp: new Date().toLocaleString()
+    });
 
     let starsStr = '';
     for (let i = 0; i < 3; i++) starsStr += (i < stars) ? '⭐' : '☆';
@@ -1885,6 +2179,123 @@ class VocabGame {
   }
 
   // =========================================================================
+  // 👨‍🏫 教師管理後台 (Teacher Console) 核心邏輯
+  // =========================================================================
+  openTeacherAdminModal() {
+    const accounts = AccountManager.getAllAccounts();
+    const studentList = Object.values(accounts);
+
+    // 計算總體指標
+    const totalCount = studentList.length;
+    let totalStars = 0;
+    let sumStages = 0;
+    let totalMastered = 0;
+
+    studentList.forEach(s => {
+      totalStars += this.calculateStars(s);
+      sumStages += (s.unlockedStage || 1);
+      Object.values(s.memoryLadderMap || {}).forEach(lvl => {
+        if (lvl >= 5) totalMastered++;
+      });
+    });
+
+    const avgStage = totalCount > 0 ? (sumStages / totalCount).toFixed(1) : "1.0";
+
+    document.getElementById('tSummaryStudents').textContent = `${totalCount} 人`;
+    document.getElementById('tSummaryAvgStage').textContent = `第 ${avgStage} 關`;
+    document.getElementById('tSummaryStars').textContent = `⭐ ${totalStars}`;
+    document.getElementById('tSummaryMastered').textContent = `${totalMastered} 字`;
+
+    document.getElementById('inputWebhookUrl').value = AccountManager.getWebhookUrl();
+
+    // 渲染學生成績表格
+    const tbody = document.getElementById('teacherTableBody');
+    tbody.innerHTML = '';
+
+    if (totalCount === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#9ca3af; padding:20px;">尚無學生測驗紀錄。</td></tr>';
+    } else {
+      // 依累積星數排序
+      studentList.sort((a, b) => this.calculateStars(b) - this.calculateStars(a));
+
+      studentList.forEach((std, idx) => {
+        const tr = document.createElement('tr');
+        const stars = this.calculateStars(std);
+        
+        // 整理各關明細
+        const clearedStages = Object.keys(std.stageRecords || {})
+          .filter(k => std.stageRecords[k].cleared)
+          .sort((a, b) => a - b)
+          .map(k => `關${k}:⭐${std.stageRecords[k].stars}`)
+          .join(', ') || '尚無通關';
+
+        let mCount = 0;
+        Object.values(std.memoryLadderMap || {}).forEach(lvl => { if (lvl >= 5) mCount++; });
+
+        tr.innerHTML = `
+          <td style="font-weight:700; color:var(--gold);">${idx + 1}</td>
+          <td><strong style="color:var(--cyan); font-size:0.95rem;">${std.nickname}</strong><div style="font-size:0.7rem; color:#9ca3af;">最後活躍: ${std.lastActiveTime || '剛剛'}</div></td>
+          <td><span class="badge badge-purple" style="font-size:0.8rem;">第 ${std.unlockedStage || 1} 關</span></td>
+          <td style="color:var(--gold); font-weight:700;">⭐ ${stars}</td>
+          <td style="font-size:0.75rem; color:#d1d5db; max-width:200px; overflow-x:auto;">${clearedStages}</td>
+          <td style="color:#f472b6; font-weight:700;">${mCount} 字</td>
+          <td style="color:#34d399; font-weight:700;">${(std.highScore || 0).toLocaleString()}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    this.openModal('teacherAdmin');
+  }
+
+  // 匯出 CSV 檔供老師 Excel 備查
+  exportGradebookCSV() {
+    const accounts = AccountManager.getAllAccounts();
+    const list = Object.values(accounts);
+    if (list.length === 0) { alert("目前尚無學生成績資料可匯出！"); return; }
+
+    list.sort((a, b) => this.calculateStars(b) - this.calculateStars(a));
+
+    let csvContent = "\uFEFF排名,學生姓名,解鎖關卡,獲得總星數,精熟單字數,歷史最高分,通關紀錄明細,最後活躍時間\n";
+    list.forEach((s, i) => {
+      const stars = this.calculateStars(s);
+      let mCount = 0;
+      Object.values(s.memoryLadderMap || {}).forEach(l => { if (l >= 5) mCount++; });
+      const details = Object.keys(s.stageRecords || {})
+        .filter(k => s.stageRecords[k].cleared)
+        .map(k => `關卡${k}(${s.stageRecords[k].stars}星)`)
+        .join('; ');
+
+      csvContent += `${i + 1},"${s.nickname}",第 ${s.unlockedStage||1} 關,${stars},${mCount},${s.highScore||0},"${details}","${s.lastActiveTime||''}"\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `國小1200單字_全班學習成績報表_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // 一鍵複製文字成績簡報
+  copyGradeSummaryText() {
+    const accounts = AccountManager.getAllAccounts();
+    const list = Object.values(accounts);
+    if (list.length === 0) { alert("無資料！"); return; }
+    list.sort((a, b) => this.calculateStars(b) - this.calculateStars(a));
+
+    let text = `【國小1200單字迷宮 · 班級學習成果總覽】\n統計時間：${new Date().toLocaleString()}\n----------------------------\n`;
+    list.forEach((s, i) => {
+      text += `${i + 1}. 學生：${s.nickname} | 進度：第 ${s.unlockedStage||1} 關 | 總星數：⭐${this.calculateStars(s)} | 最高分：${s.highScore||0}\n`;
+    });
+    navigator.clipboard.writeText(text).then(() => {
+      alert("✅ 已成功複製全班成績摘要到剪貼簿！可直接貼在 LINE 或教學聯絡簿！");
+    });
+  }
+
+  // =========================================================================
   // iPad 雙人對決
   // =========================================================================
   startDualBattle() {
@@ -1895,6 +2306,26 @@ class VocabGame {
       p2Hp: 100,
       locked: false
     };
+
+    // 同步玩家暱稱至藍隊 (P1)
+    if (this.user && this.user.nickname) {
+      document.getElementById('dualP1Name').textContent = `🔵 ${this.user.nickname} (P1)`;
+    } else {
+      document.getElementById('dualP1Name').textContent = `🔵 藍隊勇者 (P1)`;
+    }
+
+    // 視角旋轉設定 (預設直立面對面 180° 倒轉)
+    const deckP2 = document.getElementById('dualDeckP2');
+    const btn = document.getElementById('btnToggleDualOrientation');
+    if (this.isDualFaceToFace) {
+      deckP2.classList.add('rotated');
+      btn.innerHTML = '🔄 視角：面對面 (180°倒轉)';
+      btn.style.color = '#38bdf8';
+    } else {
+      deckP2.classList.remove('rotated');
+      btn.innerHTML = '🔄 視角：並排同向 (0°雙方正向)';
+      btn.style.color = '#a7f3d0';
+    }
 
     this.switchScreen('dual');
     this.spawnDualQuestion();
@@ -1907,22 +2338,38 @@ class VocabGame {
     }
 
     this.dualState.locked = false;
-    document.getElementById('dualRoundText').textContent = `第 ${this.dualState.round} / ${this.dualState.totalRounds} 回合`;
+    document.getElementById('dualRoundText').textContent = `⚔️ 第 ${this.dualState.round} / ${this.dualState.totalRounds} 回合 ⚔️`;
     document.getElementById('dualP1Hp').textContent = this.dualState.p1Hp;
     document.getElementById('dualP2Hp').textContent = this.dualState.p2Hp;
     document.getElementById('dualP1HpBar').style.width = `${Math.max(0, this.dualState.p1Hp)}%`;
     document.getElementById('dualP2HpBar').style.width = `${Math.max(0, this.dualState.p2Hp)}%`;
 
-    const wordPool = getStageWordList(1).concat(getStageWordList(2));
+    // 清除雙方受傷震動
+    document.getElementById('dualDeckP1').classList.remove('deck-damage');
+    document.getElementById('dualDeckP2').classList.remove('deck-damage');
+
+    // 擴大題庫池：包含前 5 關或當前玩家解鎖關卡之全部單字
+    const maxStage = Math.max(5, this.user ? (this.user.unlockedStage || 1) : 5);
+    let wordPool = [];
+    for (let s = 1; s <= maxStage; s++) {
+      wordPool = wordPool.concat(getStageWordList(s));
+    }
+    if (!wordPool.length) wordPool = getStageWordList(1);
+
     const targetWord = wordPool[Math.floor(Math.random() * wordPool.length)];
     this.dualCurrentWord = targetWord;
 
-    document.getElementById('dualPromptWord').textContent = targetWord.word;
-    document.getElementById('dualPromptSentence').innerHTML = targetWord.sentence;
+    // 分別渲染 P1 與 P2 的題目 (各自面向自己，字體清晰)
+    ['P1', 'P2'].forEach(p => {
+      document.getElementById(`dualPromptWord${p}`).textContent = targetWord.word;
+      document.getElementById(`dualPromptPhonetic${p}`).textContent = targetWord.phonetic || '';
+      document.getElementById(`dualPromptPos${p}`).textContent = targetWord.pos || '';
+      document.getElementById(`dualPromptSentence${p}`).innerHTML = targetWord.sentence;
+    });
 
     const options = [targetWord.def, ...targetWord.distractors];
 
-    // 藍方
+    // P1 選項
     const p1Options = [...options].sort(() => Math.random() - 0.5);
     const p1Container = document.getElementById('dualOptionsP1');
     p1Container.innerHTML = '';
@@ -1934,7 +2381,7 @@ class VocabGame {
       p1Container.appendChild(btn);
     });
 
-    // 紅方
+    // P2 選項 (獨立洗牌避免抄看指位)
     const p2Options = [...options].sort(() => Math.random() - 0.5);
     const p2Container = document.getElementById('dualOptionsP2');
     p2Container.innerHTML = '';
@@ -1954,24 +2401,47 @@ class VocabGame {
     if (isCorrect) {
       this.dualState.locked = true;
       this.sound.play('correct');
+      this.sound.play('hit');
       btn.style.background = '#059669';
+      btn.style.borderColor = '#10b981';
+      btn.textContent = `✓ ${btn.textContent}`;
 
       if (player === 'p1') {
         this.dualState.p2Hp -= 25;
-        this.sound.play('hit');
+        document.getElementById('dualDeckP2').classList.add('deck-damage');
       } else {
         this.dualState.p1Hp -= 25;
-        this.sound.play('hit');
+        document.getElementById('dualDeckP1').classList.add('deck-damage');
       }
 
+      document.getElementById('dualP1Hp').textContent = Math.max(0, this.dualState.p1Hp);
+      document.getElementById('dualP2Hp').textContent = Math.max(0, this.dualState.p2Hp);
+      document.getElementById('dualP1HpBar').style.width = `${Math.max(0, this.dualState.p1Hp)}%`;
+      document.getElementById('dualP2HpBar').style.width = `${Math.max(0, this.dualState.p2Hp)}%`;
+
       this.dualState.round++;
-      setTimeout(() => this.spawnDualQuestion(), 700);
+      setTimeout(() => {
+        if (this.dualState.p1Hp <= 0 || this.dualState.p2Hp <= 0 || this.dualState.round > this.dualState.totalRounds) {
+          this.handleDualVictory();
+        } else {
+          this.spawnDualQuestion();
+        }
+      }, 700);
 
     } else {
       this.sound.play('wrong');
       btn.style.background = '#991b1b';
-      if (player === 'p1') this.dualState.p1Hp -= 10;
-      else this.dualState.p2Hp -= 10;
+      btn.style.borderColor = '#ef4444';
+      btn.textContent = `✗ ${btn.textContent}`;
+      btn.disabled = true;
+
+      if (player === 'p1') {
+        this.dualState.p1Hp -= 10;
+        document.getElementById('dualDeckP1').classList.add('deck-damage');
+      } else {
+        this.dualState.p2Hp -= 10;
+        document.getElementById('dualDeckP2').classList.add('deck-damage');
+      }
 
       document.getElementById('dualP1Hp').textContent = Math.max(0, this.dualState.p1Hp);
       document.getElementById('dualP2Hp').textContent = Math.max(0, this.dualState.p2Hp);
@@ -1979,7 +2449,8 @@ class VocabGame {
       document.getElementById('dualP2HpBar').style.width = `${Math.max(0, this.dualState.p2Hp)}%`;
 
       if (this.dualState.p1Hp <= 0 || this.dualState.p2Hp <= 0) {
-        this.handleDualVictory();
+        this.dualState.locked = true;
+        setTimeout(() => this.handleDualVictory(), 400);
       }
     }
   }
