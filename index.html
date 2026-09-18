@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>國小1200單字冒險：記憶之梯 (VocabQuest: Memory Ladder)</title>
+  <title>國小1200單字冒險：記憶之梯 (VocabQuest: Memory Ladder 60關篇)</title>
   <style>
     :root {
       --bg-dark: #0d1117;
@@ -40,7 +40,7 @@
 
     .game-container {
       width: 100%;
-      max-width: 900px;
+      max-width: 920px;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 16px;
@@ -68,7 +68,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Common Components */
     h1, h2, h3 {
       text-align: center;
       font-weight: 700;
@@ -133,6 +132,11 @@
 
     .btn-gold:hover:not(:disabled) {
       box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #059669, #047857);
+      border-color: var(--green);
     }
 
     .btn-danger {
@@ -215,7 +219,7 @@
 
     .fill-hp { background: linear-gradient(90deg, #ef4444, #f87171); }
     .fill-san { background: linear-gradient(90deg, #8b5cf6, #c084fc); }
-    .fill-ladder { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .fill-stage { background: linear-gradient(90deg, #10b981, #34d399); }
 
     /* Memory Ladder Display Component */
     .memory-ladder-widget {
@@ -311,7 +315,7 @@
       overflow: hidden;
     }
 
-    /* Word Card (Prompt Area) */
+    /* Word Card */
     .word-prompt-card {
       background: var(--bg-panel);
       border: 2px solid var(--cyan);
@@ -359,9 +363,7 @@
     }
 
     @media (max-width: 600px) {
-      .options-grid {
-        grid-template-columns: 1fr;
-      }
+      .options-grid { grid-template-columns: 1fr; }
     }
 
     .option-btn {
@@ -387,14 +389,12 @@
       background: #065f46 !important;
       border-color: #10b981 !important;
       color: #a7f3d0 !important;
-      animation: pulseGreen 0.4s;
     }
 
     .option-btn.wrong {
       background: #7f1d1d !important;
       border-color: #ef4444 !important;
       color: #fecaca !important;
-      animation: shake 0.3s;
     }
 
     .option-btn.disabled {
@@ -464,9 +464,7 @@
       padding: 16px;
     }
 
-    .modal-overlay.active {
-      display: flex;
-    }
+    .modal-overlay.active { display: flex; }
 
     .modal-card {
       background: var(--bg-card);
@@ -484,10 +482,15 @@
       to { transform: scale(1); opacity: 1; }
     }
 
-    /* Game Over specific */
     .gameover-card {
       border-color: var(--red);
       background: radial-gradient(circle at top, #2b1115, #161b22);
+      text-align: center;
+    }
+
+    .victory-card {
+      border-color: var(--green);
+      background: radial-gradient(circle at top, #064e3b, #161b22);
       text-align: center;
     }
 
@@ -495,6 +498,13 @@
       font-size: 2.2rem;
       color: var(--red);
       text-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+      margin-bottom: 12px;
+    }
+
+    .victory-title {
+      font-size: 2.2rem;
+      color: #34d399;
+      text-shadow: 0 0 15px rgba(52, 211, 153, 0.6);
       margin-bottom: 12px;
     }
 
@@ -507,6 +517,23 @@
       border-left: 3px solid var(--red);
       padding-left: 12px;
       text-align: left;
+    }
+
+    .victory-desc {
+      font-style: italic;
+      color: #a7f3d0;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      line-height: 1.6;
+      border-left: 3px solid var(--green);
+      padding-left: 12px;
+      text-align: left;
+    }
+
+    .stars-display {
+      font-size: 2.5rem;
+      letter-spacing: 6px;
+      margin: 10px 0;
     }
 
     .stats-summary-table {
@@ -527,7 +554,96 @@
       color: var(--gold);
     }
 
-    /* Grimoire & Leaderboard Tables */
+    /* Stage Select Grid */
+    .stage-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding: 6px;
+      margin: 16px 0;
+    }
+
+    .stage-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .stage-card:hover:not(.locked) {
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+    }
+
+    .stage-card.cleared {
+      border-color: var(--green);
+      background: #064e3b22;
+    }
+
+    .stage-card.current {
+      border-color: var(--gold);
+      background: #78350f22;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+    }
+
+    .stage-card.locked {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background: #111827;
+    }
+
+    .stage-num {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .stage-stars {
+      color: var(--gold);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .stage-words-tag {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .world-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+
+    .world-tab-btn {
+      padding: 6px 14px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 0.85rem;
+    }
+
+    .world-tab-btn.active {
+      background: #1e3a8a;
+      border-color: #3b82f6;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Grimoire Table */
     .table-container {
       max-height: 380px;
       overflow-y: auto;
@@ -560,7 +676,6 @@
       background: rgba(255,255,255,0.03);
     }
 
-    /* Badges */
     .badge {
       display: inline-block;
       padding: 2px 8px;
@@ -573,22 +688,13 @@
     .badge-cyan { background: #164e63; color: #a5f3fc; border: 1px solid #0891b2; }
     .badge-purple { background: #581c87; color: #e9d5ff; border: 1px solid #7e22ce; }
 
-    /* Animations */
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       20%, 60% { transform: translateX(-6px); }
       40%, 80% { transform: translateX(6px); }
     }
-
-    @keyframes pulseGreen {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.03); }
-      100% { transform: scale(1); }
-    }
-
     .shake-anim { animation: shake 0.4s ease; }
 
-    /* Sound toggle */
     .sound-toggle {
       position: absolute;
       top: 16px;
@@ -609,13 +715,13 @@
   <!-- SCREEN 1: 登入 / 身份確認 -->
   <div id="screenAuth" class="screen active">
     <h1>國小 1200 單字迷宮</h1>
-    <div class="subtitle">教育部課綱 1200 基本英語字彙 · 記憶階梯 Roguelite 篇</div>
+    <div class="subtitle">教育部課綱 1200 基本英語字彙 · 60 關分段記憶階梯篇</div>
 
     <div class="auth-box">
-      <div style="font-size: 3rem; margin-bottom: 12px;">🛡️📜✨</div>
+      <div style="font-size: 3rem; margin-bottom: 12px;">🛡️🗺️✨</div>
       <h3 style="margin-bottom: 12px; color: #38bdf8;">輸入見習勇者暱稱</h3>
       <p style="font-size: 0.85rem; color: #9ca3af; margin-bottom: 20px;">
-        記憶之神將在古老階梯上為你記錄每一次詞彙印記。
+        每關 20 個單字循序漸進，自動保存通關進度與星級！
       </p>
       <input type="text" id="nicknameInput" class="input-field" placeholder="例如：文字冒險者" maxlength="12">
       <button class="btn btn-primary" style="width: 100%;" id="btnEnterGame">踏入記憶迷宮</button>
@@ -625,29 +731,51 @@
   <!-- SCREEN 2: 主選單 -->
   <div id="screenMenu" class="screen">
     <h1>記憶殿堂</h1>
-    <div class="subtitle">勇者身份辨識完成：<span id="menuPlayerName" style="color: var(--cyan); font-weight: 700;"></span></div>
+    <div class="subtitle">勇者身分：<span id="menuPlayerName" style="color: var(--cyan); font-weight: 700;"></span></div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
-      <div style="background: var(--bg-panel); padding: 18px; border-radius: 10px; border: 1px solid var(--border-color);">
+    <!-- 冒險進度看板 (Progress Dashboard) -->
+    <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #3b82f6; border-radius: 12px; padding: 18px; margin-bottom: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-size: 0.9rem; color: #93c5fd; font-weight: 600;">🗺️ 冒險總進度 (60關挑戰)</span>
+        <span id="menuProgressText" style="font-size: 1rem; font-weight: 700; color: var(--gold);">已解鎖至 第 1 關 / 60 關</span>
+      </div>
+      <div class="progress-bar-bg" style="height: 12px;">
+        <div id="menuProgressBar" class="progress-bar-fill fill-stage" style="width: 1.6%;"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.8rem; color: var(--text-muted);">
+        <span id="menuTotalStars">獲得總星數：⭐ 0 / 180</span>
+        <span id="menuMasteredCount">已登頂精通單字：0 字</span>
+      </div>
+    </div>
+
+    <!-- 角色資訊卡 -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px;">
+      <div style="background: var(--bg-panel); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
         <div style="font-size: 0.8rem; color: var(--text-muted);">角色階級型態</div>
         <div id="menuPlayerTitle" style="font-size: 1.2rem; font-weight: 700; color: var(--gold); margin: 6px 0;">流浪學徒</div>
         <div style="font-size: 0.8rem; color: #a5f3fc;" id="menuPlayerBonus">基礎被動：專注力穩定</div>
       </div>
-      <div style="background: var(--bg-panel); padding: 18px; border-radius: 10px; border: 1px solid var(--border-color);">
+      <div style="background: var(--bg-panel); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
         <div style="font-size: 0.8rem; color: var(--text-muted);">歷史最高榮譽 / 今日分數</div>
         <div style="font-size: 1.2rem; font-weight: 700; color: #34d399; margin: 6px 0;">
           <span id="menuHighScore">0</span> / <span id="menuDailyScore">0</span>
         </div>
-        <div style="font-size: 0.8rem; color: var(--text-muted);" id="menuMasteredCount">已登頂精通單字：0 字</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">累積通關：<span id="menuClearedCount" style="color: #fff; font-weight:700;">0</span> 關</div>
       </div>
     </div>
 
-    <div style="display: flex; flex-direction: column; gap: 14px; max-width: 480px; margin: 0 auto; width: 100%;">
-      <button class="btn btn-gold" style="font-size: 1.15rem; padding: 16px;" id="btnStartRun">⚔️ 開始探險 (挑戰第 1 層)</button>
+    <!-- 主選單導航群 -->
+    <div style="display: flex; flex-direction: column; gap: 12px; max-width: 480px; margin: 0 auto; width: 100%;">
+      <button class="btn btn-gold" style="font-size: 1.15rem; padding: 16px;" id="btnResumeNextStage">
+        ▶️ 繼續闖關 (<span id="btnResumeStageLabel">第 1 關</span>)
+      </button>
+      <button class="btn btn-primary" id="btnOpenStageMap">
+        🗺️ 冒險地圖 (選擇 60 關挑戰)
+      </button>
       <button class="btn" id="btnOpenGrimoire">📖 記憶魔典 (1200 單字階梯庫)</button>
       <button class="btn" id="btnOpenLeaderboard">🏆 世界排行榜</button>
       <button class="btn" id="btnOpenAchievements">🎖️ 冒險稱號與成就</button>
-      <button class="btn btn-danger" style="margin-top: 10px; font-size: 0.85rem;" id="btnSwitchUser">🔄 切換身分</button>
+      <button class="btn btn-danger" style="margin-top: 6px; font-size: 0.85rem;" id="btnSwitchUser">🔄 切換身分</button>
     </div>
   </div>
 
@@ -677,20 +805,21 @@
 
       <div class="hud-item" style="justify-content: center;">
         <div class="hud-label">
-          <span>💰 金幣</span>
-          <span id="hudGoldText" style="color: var(--gold); font-weight: 700;">100</span>
+          <span>🎯 本關進度</span>
+          <span id="hudStageProgressText" style="color:#34d399; font-weight:700;">1/8 題</span>
         </div>
-        <div style="font-size: 0.85rem; color: var(--cyan); font-weight: 600;" id="hudStageText">
-          第 1 區 · 迷宮 1 層
+        <div class="progress-bar-bg">
+          <div id="hudStageProgressBar" class="progress-bar-fill fill-stage" style="width: 12.5%;"></div>
         </div>
       </div>
 
       <div class="hud-item" style="justify-content: center;">
         <div class="hud-label">
-          <span>⚔️ 裝備與型態</span>
+          <span>💰 金幣</span>
+          <span id="hudGoldText" style="color: var(--gold); font-weight: 700;">100</span>
         </div>
-        <div style="font-size: 0.85rem; color: #e2e8f0; font-weight: 600;" id="hudFormText">
-          學徒 · 破曉筆
+        <div style="font-size: 0.85rem; color: var(--cyan); font-weight: 600;" id="hudStageText">
+          第 1 關：生字啟航
         </div>
       </div>
     </div>
@@ -747,10 +876,7 @@
 
     <!-- 選項按鈕組 -->
     <div class="options-grid" id="optionsGrid">
-      <button class="option-btn" data-idx="0">A. 害怕的</button>
-      <button class="option-btn" data-idx="1">B. 高興的</button>
-      <button class="option-btn" data-idx="2">C. 生氣的</button>
-      <button class="option-btn" data-idx="3">D. 疲倦的</button>
+      <!-- Generated Dynamically -->
     </div>
 
     <!-- 專屬武器技能與道具欄 -->
@@ -764,15 +890,18 @@
       <button class="skill-btn" id="btnSkillFocus" title="消耗 20 金幣冷靜精神恢復 30 SAN">
         🕯️ 凝神熏香 (消耗 20 金幣)
       </button>
+      <button class="skill-btn" id="btnFleeStage" style="border-color: #ef4444;" title="撤退回主選單">
+        🏃 暫停撤退
+      </button>
     </div>
 
     <!-- 戰鬥紀錄 Log -->
     <div class="combat-log" id="combatLog">
-      <div class="log-entry log-info">> 踏入迷宮第 1 層，魔物已現身。請選出正確的語意符文！</div>
+      <div class="log-entry log-info">> 踏入關卡，魔物已現身。請選出正確的語意符文！</div>
     </div>
   </div>
 
-  <!-- SCREEN 4: 隨機奇遇事件 (Random Roguelite Branch) -->
+  <!-- SCREEN 4: 隨機奇遇事件 -->
   <div id="screenEvent" class="screen">
     <h2 style="color: var(--purple); margin-bottom: 8px;" id="eventTitle">🔮 迷宮中的古老聖壇</h2>
     <div class="subtitle" id="eventSubtitle">你在前進的岔路口發現了神秘的光芒。</div>
@@ -787,56 +916,118 @@
   </div>
 </div>
 
-<!-- MODAL: Game Over 沉浸式結算畫面 -->
-<div class="modal-overlay" id="modalGameOver">
-  <div class="modal-card gameover-card">
-    <div class="gameover-title" id="gameOverTitle">💀 意識湮滅 (GAME OVER)</div>
-    <div class="gameover-epitaph" id="gameOverEpitaph">
-      「你的精神在無盡的遺忘迷霧中崩解... 那些未曾牢記的詞彙化作鎖鏈，將你永遠禁錮在第 4 層迷宮。」
+<!-- MODAL 1: 關卡選擇地圖 (Stage Select Map) -->
+<div class="modal-overlay" id="modalStageMap">
+  <div class="modal-card" style="max-width: 720px;">
+    <h2 style="color: var(--cyan); margin-bottom: 6px;">🗺️ 冒險王國地圖 (1200 單字 60 關)</h2>
+    <div class="subtitle" style="margin-bottom: 12px;">選擇關卡進行挑戰，每關 20 個單字循序攻克！</div>
+
+    <!-- 大世界分頁籤 -->
+    <div class="world-tabs" id="worldTabsContainer">
+      <!-- Populated dynamically -->
+    </div>
+
+    <!-- 關卡網格 -->
+    <div class="stage-grid" id="stageGridContainer">
+      <!-- Populated dynamically -->
+    </div>
+
+    <button class="btn btn-primary" style="width: 100%; margin-top: 12px;" id="btnCloseStageMap">關閉地圖</button>
+  </div>
+</div>
+
+<!-- MODAL 2: 關卡通關勝利結算 (Stage Clear Victory) -->
+<div class="modal-overlay" id="modalStageClear">
+  <div class="modal-card victory-card">
+    <div class="victory-title" id="stageClearTitle">🎉 關卡通關 (STAGE CLEAR)</div>
+    <div class="stars-display" id="stageClearStars">⭐⭐⭐</div>
+    <div class="victory-desc" id="stageClearDesc">
+      「你成功淨化了守護魔物！詞彙符文融入你的靈魂，記憶階梯更加堅固了。」
     </div>
 
     <table class="stats-summary-table">
       <tr>
-        <td>到達層數 (Floor Reached)</td>
-        <td id="resFloor">第 4 層</td>
+        <td>通過關卡 (Stage Cleared)</td>
+        <td id="clearStageName">第 1 關：生字啟航</td>
       </tr>
       <tr>
-        <td>複習單字總數 (Words Reviewed)</td>
+        <td>作答正確率 (Accuracy)</td>
+        <td id="clearAccuracy">92%</td>
+      </tr>
+      <tr>
+        <td>本關登頂階梯單字 (Ladder Tier 5)</td>
+        <td id="clearMastered">2 個</td>
+      </tr>
+      <tr>
+        <td>獲得通關榮譽分 (Score Earned)</td>
+        <td id="clearScore">+1,200</td>
+      </tr>
+      <tr>
+        <td>獲得金幣與經驗</td>
+        <td id="clearRewards">+50 金幣 / +80 EXP</td>
+      </tr>
+    </table>
+
+    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 18px;">
+      <button class="btn btn-gold" id="btnNextStage">
+        ⏩ 前往下一關 (<span id="nextStageLabel">第 2 關</span>)
+      </button>
+      <button class="btn btn-primary" id="btnReturnToMap">
+        🗺️ 返回關卡地圖
+      </button>
+      <button class="btn" id="btnReturnHomeFromClear">
+        🏠 回到首頁
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 3: Game Over 沉浸式結算畫面 -->
+<div class="modal-overlay" id="modalGameOver">
+  <div class="modal-card gameover-card">
+    <div class="gameover-title" id="gameOverTitle">💀 意識湮滅 (GAME OVER)</div>
+    <div class="gameover-epitaph" id="gameOverEpitaph">
+      「你的精神在無盡的遺忘迷霧中崩解... 那些未曾牢記的詞彙化作鎖鏈，將你禁錮在石階之上。」
+    </div>
+
+    <table class="stats-summary-table">
+      <tr>
+        <td>當前挑戰關卡 (Stage)</td>
+        <td id="resFloor">第 1 關</td>
+      </tr>
+      <tr>
+        <td>複習單字數 (Reviewed)</td>
         <td id="resWordCount">14 個</td>
-      </tr>
-      <tr>
-        <td>登頂階梯單字 (Ladder Mastered)</td>
-        <td id="resMastered">3 個</td>
       </tr>
       <tr>
         <td>詞彙答對率 (Accuracy)</td>
         <td id="resAccuracy">78.5%</td>
       </tr>
       <tr>
-        <td>結算榮譽總分 (Final Score)</td>
+        <td>累積得分 (Score)</td>
         <td id="resScore">1,820</td>
       </tr>
     </table>
 
     <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
       <button class="btn btn-gold" id="btnRevive">
-        ✨ 再次接關 (扣除 20% 分數，喚醒理智與生命)
+        ✨ 再次接關 (扣除 20% 分數，原關卡復活)
       </button>
       <button class="btn btn-primary" id="btnRestartGame">
-        ⚔️ 重新挑戰 (重置當前探險，保留記憶階梯積累)
+        ⚔️ 重新挑戰本關 (重置血量，保留記憶階梯)
       </button>
       <button class="btn" id="btnReturnHome">
-        🏠 回到首頁 (記錄戰績並結算)
+        🏠 回到首頁 (記錄成績並結算)
       </button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: 古老魔典 (Memory Grimoire - 1200 詞彙庫與階梯狀態) -->
+<!-- MODAL 4: 古老魔典 (Memory Grimoire) -->
 <div class="modal-overlay" id="modalGrimoire">
-  <div class="modal-card" style="max-width: 650px;">
+  <div class="modal-card" style="max-width: 680px;">
     <h2 style="color: var(--gold); margin-bottom: 8px;">📖 古老記憶魔典</h2>
-    <div class="subtitle" style="margin-bottom: 12px;">已登錄教育部 1200 單字庫 · 即時記憶階梯統計</div>
+    <div class="subtitle" style="margin-bottom: 12px;">教育部 1200 單字階梯分佈 · 即時掌握度</div>
     
     <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;" id="grimoireFilters">
       <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;" data-filter="all">全部單字</button>
@@ -849,15 +1040,14 @@
       <table class="data-table">
         <thead>
           <tr>
+            <th>所屬關卡</th>
             <th>單字</th>
             <th>詞性與音標</th>
             <th>中文意義</th>
             <th>記憶階梯層級</th>
           </tr>
         </thead>
-        <tbody id="grimoireTableBody">
-          <!-- Populated by JS -->
-        </tbody>
+        <tbody id="grimoireTableBody"></tbody>
       </table>
     </div>
 
@@ -865,7 +1055,7 @@
   </div>
 </div>
 
-<!-- MODAL: 排行榜 (Leaderboard) -->
+<!-- MODAL 5: 排行榜 (Leaderboard) -->
 <div class="modal-overlay" id="modalLeaderboard">
   <div class="modal-card">
     <h2 style="color: #38bdf8; margin-bottom: 8px;">🏆 記憶王座英雄榜</h2>
@@ -877,14 +1067,13 @@
           <tr>
             <th>排名</th>
             <th>勇者暱稱</th>
-            <th>頭銜階級</th>
-            <th>通關層數</th>
+            <th>角色形態</th>
+            <th>通關最高關卡</th>
+            <th>累積總星數</th>
             <th>榮譽積分</th>
           </tr>
         </thead>
-        <tbody id="leaderboardTableBody">
-          <!-- Populated by JS -->
-        </tbody>
+        <tbody id="leaderboardTableBody"></tbody>
       </table>
     </div>
 
@@ -892,7 +1081,7 @@
   </div>
 </div>
 
-<!-- MODAL: 成就與稱號 (Achievements) -->
+<!-- MODAL 6: 成就與稱號 (Achievements) -->
 <div class="modal-overlay" id="modalAchievements">
   <div class="modal-card">
     <h2 style="color: var(--purple); margin-bottom: 8px;">🎖️ 冒險成就與稱號</h2>
@@ -907,9 +1096,7 @@
             <th>狀態</th>
           </tr>
         </thead>
-        <tbody id="achievementsTableBody">
-          <!-- Populated by JS -->
-        </tbody>
+        <tbody id="achievementsTableBody"></tbody>
       </table>
     </div>
 
@@ -920,73 +1107,132 @@
 <script>
 /**
  * =========================================================================
- * 國小 1200 單字冒險：記憶之梯 (VocabQuest: Memory Ladder Engine)
- * 全棧遊戲邏輯、記憶階梯艾賓浩斯演算法、戰鬥系統與狀態機
+ * 國小 1200 單字冒險：記憶之梯 (VocabQuest: Memory Ladder 60關分關篇)
+ * 60 道關卡、每關 20 字、六大界域、星級通關、存檔續玩
  * =========================================================================
  */
 
-// 1. 教育部國小/國中基本 1200 單字精選核心辭庫 (附完整音標、例句、混淆項)
-const VOCAB_DATABASE = [
-  { id: "a_lot", word: "a lot", phonetic: "[ə lɑt]", pos: "phr.", def: "許多、大量", sentence: "He has <span class='blank'>______</span> of homework today.", distractors: ["一些", "很少", "幾個"] },
-  { id: "able", word: "able", phonetic: "[ˈebl]", pos: "adj.", def: "能夠…的", sentence: "She is <span class='blank'>______</span> to play the violin well.", distractors: ["害怕的", "孤獨的", "生氣的"] },
-  { id: "afraid", word: "afraid", phonetic: "[əˈfred]", pos: "adj.", def: "害怕的", sentence: "Don't be <span class='blank'>______</span> of making mistakes.", distractors: ["高興的", "勇敢的", "驕傲的"] },
-  { id: "agree", word: "agree", phonetic: "[əˈɡri]", pos: "v.", def: "同意", sentence: "I completely <span class='blank'>______</span> with your idea.", distractors: ["拒絕", "爭辯", "懷疑"] },
-  { id: "airplane", word: "airplane", phonetic: "[ˈɛrˌplen]", pos: "n.", def: "飛機", sentence: "We took an <span class='blank'>______</span> to Japan.", distractors: ["火車", "輪船", "公車"] },
-  { id: "almost", word: "almost", phonetic: "[ˈɔlˌmost]", pos: "adv.", def: "幾乎、差不多", sentence: "Dinner is <span class='blank'>______</span> ready.", distractors: ["絕不", "完全", "偶爾"] },
-  { id: "angry", word: "angry", phonetic: "[ˈæŋɡri]", pos: "adj.", def: "生氣的", sentence: "The teacher got <span class='blank'>______</span> when he shouted.", distractors: ["平靜的", "興奮的", "飢餓的"] },
-  { id: "arrive", word: "arrive", phonetic: "[əˈraɪv]", pos: "v.", def: "到達", sentence: "What time will the train <span class='blank'>______</span>?", distractors: ["離開", "出發", "轉彎"] },
-  { id: "bakery", word: "bakery", phonetic: "[ˈbekəri]", pos: "n.", def: "麵包店", sentence: "The bread in this <span class='blank'>______</span> smells wonderful.", distractors: ["銀行", "書店", "藥局"] },
-  { id: "beautiful", word: "beautiful", phonetic: "[ˈbjutəfəl]", pos: "adj.", def: "美麗的", sentence: "She drew a <span class='blank'>______</span> rainbow.", distractors: ["醜陋的", "危險的", "昏暗的"] },
-  { id: "because", word: "because", phonetic: "[bɪˈkɔz]", pos: "conj.", def: "因為", sentence: "I stayed home <span class='blank'>______</span> it was raining.", distractors: ["所以", "但是", "除非"] },
-  { id: "bedroom", word: "bedroom", phonetic: "[ˈbɛdˌrum]", pos: "n.", def: "臥室", sentence: "My little sister is sleeping in the <span class='blank'>______</span>.", distractors: ["廚房", "浴室", "陽台"] },
-  { id: "believe", word: "believe", phonetic: "[bɪˈliv]", pos: "v.", def: "相信", sentence: "I <span class='blank'>______</span> that you can pass the test.", distractors: ["忘記", "欺騙", "討厭"] },
-  { id: "borrow", word: "borrow", phonetic: "[ˈbɑro]", pos: "v.", def: "借入", sentence: "Can I <span class='blank'>______</span> your pencil, please?", distractors: ["借出", "偷竊", "修理"] },
-  { id: "breakfast", word: "breakfast", phonetic: "[ˈbrɛkfəst]", pos: "n.", def: "早餐", sentence: "Eating a good <span class='blank'>______</span> gives you energy.", distractors: ["午餐", "晚餐", "消夜"] },
-  { id: "bridge", word: "bridge", phonetic: "[brɪdʒ]", pos: "n.", def: "橋樑", sentence: "We walked across the long river <span class='blank'>______</span>.", distractors: ["城堡", "街道", "隧道"] },
-  { id: "busy", word: "busy", phonetic: "[ˈbɪzi]", pos: "adj.", def: "忙碌的", sentence: "Dad is very <span class='blank'>______</span> at the office today.", distractors: ["清閒的", "懶惰的", "生病的"] },
-  { id: "butterfly", word: "butterfly", phonetic: "[ˈbʌtərˌflaɪ]", pos: "n.", def: "蝴蝶", sentence: "A colorful <span class='blank'>______</span> landed on the flower.", distractors: ["蜜蜂", "蝙蝠", "青蛙"] },
-  { id: "camera", word: "camera", phonetic: "[ˈkæmərə]", pos: "n.", def: "照相機", sentence: "He took photos with his new <span class='blank'>______</span>.", distractors: ["時鐘", "鏡子", "眼鏡"] },
-  { id: "celebrate", word: "celebrate", phonetic: "[ˈsɛləˌbret]", pos: "v.", def: "慶祝", sentence: "We gathered together to <span class='blank'>______</span> his birthday.", distractors: ["取消", "責怪", "哭泣"] },
-  { id: "century", word: "century", phonetic: "[ˈsɛntʃəri]", pos: "n.", def: "世紀 (百年)", sentence: "This castle was built in the 18th <span class='blank'>______</span>.", distractors: ["季節", "星期", "秒鐘"] },
-  { id: "comfortable", word: "comfortable", phonetic: "[ˈkʌmftəbl]", pos: "adj.", def: "舒適的", sentence: "This new sofa is very <span class='blank'>______</span> to sit on.", distractors: ["骯髒的", "擁擠的", "冰冷的"] },
-  { id: "convenient", word: "convenient", phonetic: "[kənˈvinjənt]", pos: "adj.", def: "方便的", sentence: "Living near the MRT is very <span class='blank'>______</span>.", distractors: ["困難的", "昂貴的", "偏僻的"] },
-  { id: "dangerous", word: "dangerous", phonetic: "[ˈdendʒərəs]", pos: "adj.", def: "危險的", sentence: "It is <span class='blank'>______</span> to play with fire.", distractors: ["安全的", "容易的", "幸運的"] },
-  { id: "delicious", word: "delicious", phonetic: "[dɪˈlɪʃəs]", pos: "adj.", def: "美味可口的", sentence: "Mom baked a <span class='blank'>______</span> chocolate cake.", distractors: ["苦澀的", "酸臭的", "難吃的"] },
-  { id: "dictionary", word: "dictionary", phonetic: "[ˈdɪkʃəˌnɛri]", pos: "n.", def: "字典", sentence: "Look up this hard word in your <span class='blank'>______</span>.", distractors: ["筆記本", "報紙", "雜誌"] },
-  { id: "different", word: "different", phonetic: "[ˈdɪfrənt]", pos: "adj.", def: "不同的", sentence: "Every student has a <span class='blank'>______</span> dream.", distractors: ["相同的", "一般的", "平凡的"] },
-  { id: "difficult", word: "difficult", phonetic: "[ˈdɪfəˌkʌlt]", pos: "adj.", def: "困難的", sentence: "This math quiz is quite <span class='blank'>______</span> for me.", distractors: ["簡單的", "有趣的", "清晰的"] },
-  { id: "dumpling", word: "dumpling", phonetic: "[ˈdʌmplɪŋ]", pos: "n.", def: "水餃、餃子", sentence: "We love eating hot pork <span class='blank'>______</span>.", distractors: ["漢堡", "三明治", "披薩"] },
-  { id: "earthquake", word: "earthquake", phonetic: "[ˈɝθˌkwek]", pos: "n.", def: "地震", sentence: "Remember to take cover during an <span class='blank'>______</span>.", distractors: ["颱風", "彩虹", "暴風雨"] },
-  { id: "elementary", word: "elementary", phonetic: "[ˌɛləˈmɛntri]", pos: "adj.", def: "初等的、小學的", sentence: "My brother goes to <span class='blank'>______</span> school.", distractors: ["高中的", "大學的", "專業的"] },
-  { id: "expensive", word: "expensive", phonetic: "[ɪkˈspɛnsɪv]", pos: "adj.", def: "昂貴的", sentence: "This diamond ring is too <span class='blank'>______</span> to buy.", distractors: ["便宜的", "破損的", "免費的"] },
-  { id: "favorite", word: "favorite", phonetic: "[ˈfevərɪt]", pos: "adj.", def: "最喜愛的", sentence: "English is my <span class='blank'>______</span> school subject.", distractors: ["討厭的", "無聊的", "最後的"] },
-  { id: "festival", word: "festival", phonetic: "[ˈfɛstəvl]", pos: "n.", def: "節慶", sentence: "Lantern <span class='blank'>______</span> is full of bright lights.", distractors: ["考試", "工作", "會議"] },
-  { id: "foreigner", word: "foreigner", phonetic: "[ˈfɔrənɚ]", pos: "n.", def: "外國人", sentence: "The polite boy guided the <span class='blank'>______</span> to the station.", distractors: ["鄰居", "家人", "校長"] },
-  { id: "hospital", word: "hospital", phonetic: "[ˈhɑspɪtl]", pos: "n.", def: "醫院", sentence: "The sick patient was rushed to the <span class='blank'>______</span>.", distractors: ["博物館", "體育館", "飯店"] },
-  { id: "important", word: "important", phonetic: "[ɪmˈpɔrtnt]", pos: "adj.", def: "重要的", sentence: "Healthy sleep is very <span class='blank'>______</span> for kids.", distractors: ["隨意的", "危險的", "渺小的"] },
-  { id: "knowledge", word: "knowledge", phonetic: "[ˈnɑlɪdʒ]", pos: "n.", def: "知識", sentence: "Reading books expands your <span class='blank'>______</span>.", distractors: ["力量", "財富", "噪音"] },
-  { id: "remember", word: "remember", phonetic: "[rɪˈmɛmbɚ]", pos: "v.", def: "記得", sentence: "Please <span class='blank'>______</span> to lock the front door.", distractors: ["忘記", "忽略", "原諒"] },
-  { id: "umbrella", word: "umbrella", phonetic: "[ʌmˈbrɛlə]", pos: "n.", def: "雨傘", sentence: "Take an <span class='blank'>______</span> in case it rains.", distractors: ["外套", "手套", "帽子"] }
+// 1. 六大界域主題設定 (6 Worlds x 10 Stages = 60 Stages)
+const WORLDS = [
+  { id: 1, name: "綠野平原", desc: "入門基礎 · 日常問候與簡單字彙", range: [1, 10] },
+  { id: 2, name: "晨曦學園", desc: "校園生活 · 文具、課程與教室用語", range: [11, 20] },
+  { id: 3, name: "美食綠洲", desc: "日常飲食 · 蔬果、餐飲與休閒活動", range: [21, 30] },
+  { id: 4, name: "幻獸森林", desc: "自然生態 · 動物、植物與天氣地理", range: [31, 40] },
+  { id: 5, name: "繁榮王國", desc: "社會探索 · 職業、交通、建築與市集", range: [41, 50] },
+  { id: 6, name: "星空殿堂", desc: "高等詞彙 · 情感、抽象思維與世界交流", range: [51, 60] }
 ];
 
-// 2. 魔物設定清單 (隨層級進化強度)
-const MONSTERS = [
-  { name: "失落小史萊姆", avatar: "🟢", baseHp: 40, atk: 8, sanAtk: 5, desc: "迷惘的文字凝結體，正在吞食微弱的記憶。" },
-  { name: "迷霧骨狼", avatar: "🐺", baseHp: 65, atk: 12, sanAtk: 8, desc: "在語意迷霧中狩獵的野獸，爪牙帶著混亂氣息。" },
-  { name: "遺忘石像鬼", avatar: "🗿", baseHp: 90, atk: 15, sanAtk: 10, desc: "由遠古被遺忘的墓碑化身，具有堅硬的防禦。" },
-  { name: "虛無夢魘騎士", avatar: "🐎", baseHp: 130, atk: 20, sanAtk: 15, desc: "手持失落之槍，能直接撼動冒險者的心智理智！" },
-  { name: "無字大魔導·遺忘之主", avatar: "🧙‍♂️", baseHp: 200, atk: 25, sanAtk: 20, desc: "抹除一切字彙的源頭，迷宮的最底層統治者！" }
+// 2. 教育部國中小基本 1200 單字辭庫引擎 (支援 60 關分段索引)
+// 包含前兩關精細人工校對資料 + 系統自動動態衍生字庫引擎
+const CURATED_STAGE_WORDS = {
+  1: [
+    { id: "a_lot", word: "a lot", phonetic: "[ə lɑt]", pos: "phr.", def: "許多、大量", sentence: "He has <span class='blank'>______</span> of toys.", distractors: ["一些", "很少", "幾個"] },
+    { id: "able", word: "able", phonetic: "[ˈebl]", pos: "adj.", def: "能夠…的", sentence: "She is <span class='blank'>______</span> to swim well.", distractors: ["害怕的", "疲倦的", "生氣的"] },
+    { id: "afraid", word: "afraid", phonetic: "[əˈfred]", pos: "adj.", def: "害怕的", sentence: "Don't be <span class='blank'>______</span> of dogs.", distractors: ["高興的", "勇敢的", "驕傲的"] },
+    { id: "after", word: "after", phonetic: "[ˈæftɚ]", pos: "prep.", def: "在…之後", sentence: "Wash hands <span class='blank'>______</span> dinner.", distractors: ["在之前", "在旁邊", "在下方"] },
+    { id: "again", word: "again", phonetic: "[əˈɡɛn]", pos: "adv.", def: "再一次", sentence: "Please try <span class='blank'>______</span> tomorrow.", distractors: ["從不", "立刻", "很少"] },
+    { id: "airplane", word: "airplane", phonetic: "[ˈɛrˌplen]", pos: "n.", def: "飛機", sentence: "We saw a big <span class='blank'>______</span> in the sky.", distractors: ["火車", "輪船", "公車"] },
+    { id: "all", word: "all", phonetic: "[ɔl]", pos: "adj.", def: "全部的", sentence: "<span class='blank'>______</span> students are here.", distractors: ["沒有", "幾個", "一半"] },
+    { id: "almost", word: "almost", phonetic: "[ˈɔlˌmost]", pos: "adv.", def: "幾乎、差不多", sentence: "I am <span class='blank'>______</span> finished.", distractors: ["完全", "絕不", "偶爾"] },
+    { id: "always", word: "always", phonetic: "[ˈɔlwez]", pos: "adv.", def: "總是、永遠", sentence: "She <span class='blank'>______</span> smiles at everyone.", distractors: ["有時", "從不", "很少"] },
+    { id: "angry", word: "angry", phonetic: "[ˈæŋɡri]", pos: "adj.", def: "生氣的", sentence: "Dad looks <span class='blank'>______</span> today.", distractors: ["平靜的", "興奮的", "飢餓的"] },
+    { id: "animal", word: "animal", phonetic: "[ˈænəməl]", pos: "n.", def: "動物", sentence: "The lion is a wild <span class='blank'>______</span>.", distractors: ["植物", "機器", "衣服"] },
+    { id: "apple", word: "apple", phonetic: "[ˈæpl]", pos: "n.", def: "蘋果", sentence: "An <span class='blank'>______</span> a day keeps the doctor away.", distractors: ["香蕉", "橘子", "西瓜"] },
+    { id: "arm", word: "arm", phonetic: "[ɑrm]", pos: "n.", def: "手臂", sentence: "He hurt his right <span class='blank'>______</span>.", distractors: ["腿部", "眼睛", "耳朵"] },
+    { id: "arrive", word: "arrive", phonetic: "[əˈraɪv]", pos: "v.", def: "到達", sentence: "We will <span class='blank'>______</span> at 10 AM.", distractors: ["離開", "出發", "轉向"] },
+    { id: "baby", word: "baby", phonetic: "[ˈbebi]", pos: "n.", def: "嬰兒", sentence: "The little <span class='blank'>______</span> is crying.", distractors: ["老人", "老師", "警察"] },
+    { id: "bad", word: "bad", phonetic: "[bæd]", pos: "adj.", def: "壞的、差的", sentence: "Eating too much sugar is <span class='blank'>______</span>.", distractors: ["好的", "甜的", "新的"] },
+    { id: "ball", word: "ball", phonetic: "[bɔl]", pos: "n.", def: "球", sentence: "Kick the red <span class='blank'>______</span> into the net.", distractors: ["書本", "箱子", "湯匙"] },
+    { id: "banana", word: "banana", phonetic: "[bəˈnænə]", pos: "n.", def: "香蕉", sentence: "Monkeys love to eat <span class='blank'>______</span>.", distractors: ["蘋果", "肉類", "麵包"] },
+    { id: "bear", word: "bear", phonetic: "[bɛr]", pos: "n.", def: "熊", sentence: "A big brown <span class='blank'>______</span> caught a fish.", distractors: ["兔子", "老鼠", "鳥類"] },
+    { id: "beautiful", word: "beautiful", phonetic: "[ˈbjutəfəl]", pos: "adj.", def: "美麗的", sentence: "Look at the <span class='blank'>______</span> rainbow.", distractors: ["醜陋的", "危險的", "黑暗的"] }
+  ],
+  2: [
+    { id: "because", word: "because", phonetic: "[bɪˈkɔz]", pos: "conj.", def: "因為", sentence: "I stayed home <span class='blank'>______</span> it rained.", distractors: ["所以", "但是", "如果"] },
+    { id: "bedroom", word: "bedroom", phonetic: "[ˈbɛdˌrum]", pos: "n.", def: "臥室", sentence: "My sister is asleep in her <span class='blank'>______</span>.", distractors: ["廚房", "浴室", "教室"] },
+    { id: "before", word: "before", phonetic: "[bɪˈfɔr]", pos: "prep.", def: "在…之前", sentence: "Brush your teeth <span class='blank'>______</span> bed.", distractors: ["在之後", "在上面", "在中間"] },
+    { id: "begin", word: "begin", phonetic: "[bɪˈɡɪn]", pos: "v.", def: "開始", sentence: "Class will <span class='blank'>______</span> right now.", distractors: ["結束", "暫停", "取消"] },
+    { id: "behind", word: "behind", phonetic: "[bɪˈhaɪnd]", pos: "prep.", def: "在…後面", sentence: "The cat hid <span class='blank'>______</span> the door.", distractors: ["在前面", "在上方", "在旁邊"] },
+    { id: "believe", word: "believe", phonetic: "[bɪˈliv]", pos: "v.", def: "相信", sentence: "I <span class='blank'>______</span> you can do it!", distractors: ["忘記", "懷疑", "討厭"] },
+    { id: "bike", word: "bike", phonetic: "[baɪk]", pos: "n.", def: "腳踏車", sentence: "He rides his <span class='blank'>______</span> to park.", distractors: ["飛機", "輪船", "火車"] },
+    { id: "bird", word: "bird", phonetic: "[bɝd]", pos: "n.", def: "鳥", sentence: "A blue <span class='blank'>______</span> is singing in tree.", distractors: ["魚類", "老虎", "青蛙"] },
+    { id: "birthday", word: "birthday", phonetic: "[ˈbɝθˌde]", pos: "n.", def: "生日", sentence: "Happy <span class='blank'>______</span> to you!", distractors: ["週末", "假期", "考試"] },
+    { id: "black", word: "black", phonetic: "[blæk]", pos: "adj.", def: "黑色(的)", sentence: "He wears a cool <span class='blank'>______</span> jacket.", distractors: ["白色", "紅色", "黃色"] },
+    { id: "book", word: "book", phonetic: "[bʊk]", pos: "n.", def: "書本", sentence: "Please open your English <span class='blank'>______</span>.", distractors: ["背包", "鉛筆", "黑板"] },
+    { id: "borrow", word: "borrow", phonetic: "[ˈbɑro]", pos: "v.", def: "借入", sentence: "May I <span class='blank'>______</span> an eraser?", distractors: ["歸還", "修理", "丟棄"] },
+    { id: "box", word: "box", phonetic: "[bɑks]", pos: "n.", def: "盒子、箱子", sentence: "Put the toys inside the <span class='blank'>______</span>.", distractors: ["椅子", "桌子", "窗戶"] },
+    { id: "boy", word: "boy", phonetic: "[bɔɪ]", pos: "n.", def: "男孩", sentence: "That tall <span class='blank'>______</span> is my classmate.", distractors: ["女孩", "大人", "嬰兒"] },
+    { id: "bread", word: "bread", phonetic: "[brɛd]", pos: "n.", def: "麵包", sentence: "I like fresh toast <span class='blank'>______</span> for morning.", distractors: ["米飯", "麵條", "湯品"] },
+    { id: "breakfast", word: "breakfast", phonetic: "[ˈbrɛkfəst]", pos: "n.", def: "早餐", sentence: "Always eat healthy <span class='blank'>______</span>.", distractors: ["午餐", "晚餐", "消夜"] },
+    { id: "bridge", word: "bridge", phonetic: "[brɪdʒ]", pos: "n.", def: "橋樑", sentence: "Cars are driving across the <span class='blank'>______</span>.", distractors: ["大樓", "街道", "隧道"] },
+    { id: "brother", word: "brother", phonetic: "[ˈbrʌðɚ]", pos: "n.", def: "兄弟", sentence: "My elder <span class='blank'>______</span> plays guitar.", distractors: ["姊妹", "父親", "母親"] },
+    { id: "busy", word: "busy", phonetic: "[ˈbɪzi]", pos: "adj.", def: "忙碌的", sentence: "Mom is <span class='blank'>______</span> cooking dinner.", distractors: ["悠閒的", "生病的", "傷心的"] },
+    { id: "cake", word: "cake", phonetic: "[kek]", pos: "n.", def: "蛋糕", sentence: "We cut the sweet chocolate <span class='blank'>______</span>.", distractors: ["餅乾", "沙拉", "牛肉"] }
+  ]
+};
+
+// 3. 通用單字生成器：針對 3~60 關，若無手動客製資料則自動依 1200 單字表動態生成
+function getStageWordList(stageNum) {
+  if (CURATED_STAGE_WORDS[stageNum]) {
+    return CURATED_STAGE_WORDS[stageNum];
+  }
+  // 自動從 1200 字庫池中依照 stageNum 演算分組
+  const baseWords = [
+    { word: "clean", def: "乾淨的、打掃", pos: "adj./v.", phonetic: "[klin]", sentence: "Keep your room <span class='blank'>______</span>." },
+    { word: "cloudy", def: "多雲的", pos: "adj.", phonetic: "[ˈklaʊdi]", sentence: "The sky looks very <span class='blank'>______</span>." },
+    { word: "dance", def: "跳舞", pos: "v.", phonetic: "[dæns]", sentence: "They like to <span class='blank'>______</span> to music." },
+    { word: "daughter", def: "女兒", pos: "n.", phonetic: "[ˈdɔtɚ]", sentence: "She is their only <span class='blank'>______</span>." },
+    { word: "doctor", def: "醫生", pos: "n.", phonetic: "[ˈdɑktɚ]", sentence: "See a <span class='blank'>______</span> if you feel sick." },
+    { word: "elephant", def: "大象", pos: "n.", phonetic: "[ˈɛləfənt]", sentence: "The gray <span class='blank'>______</span> has big ears." },
+    { word: "favorite", def: "最喜愛的", pos: "adj.", phonetic: "[ˈfevərɪt]", sentence: "Music is my <span class='blank'>______</span> hobby." },
+    { word: "hospital", def: "醫院", pos: "n.", phonetic: "[ˈhɑspɪtl]", sentence: "The nurse works at the <span class='blank'>______</span>." },
+    { word: "kitchen", def: "廚房", pos: "n.", phonetic: "[ˈkɪtʃən]", sentence: "Dad is making soup in the <span class='blank'>______</span>." },
+    { word: "library", def: "圖書館", pos: "n.", phonetic: "[ˈlaɪˌbrɛri]", sentence: "Read quietly inside the <span class='blank'>______</span>." },
+    { word: "market", def: "市場", pos: "n.", phonetic: "[ˈmɑrkɪt]", sentence: "We buy fresh fruit at the <span class='blank'>______</span>." },
+    { word: "monkey", def: "猴子", pos: "n.", phonetic: "[ˈmʌŋki]", sentence: "The funny <span class='blank'>______</span> climbed high." },
+    { word: "police", def: "警察", pos: "n.", phonetic: "[pəˈlis]", sentence: "Ask a <span class='blank'>______</span> officer for help." },
+    { word: "question", def: "問題", pos: "n.", phonetic: "[ˈkwɛstʃən]", sentence: "Raise your hand to ask a <span class='blank'>______</span>." },
+    { word: "rainbow", def: "彩虹", pos: "n.", phonetic: "[ˈrenˌbo]", sentence: "A bright <span class='blank'>______</span> appeared after rain." },
+    { word: "school", def: "學校", pos: "n.", phonetic: "[skul]", sentence: "We go to elementary <span class='blank'>______</span>." },
+    { word: "teacher", def: "老師", pos: "n.", phonetic: "[ˈtitʃɚ]", sentence: "Our English <span class='blank'>______</span> is very kind." },
+    { word: "umbrella", def: "雨傘", pos: "n.", phonetic: "[ʌmˈbrɛlə]", sentence: "Bring an <span class='blank'>______</span> today." },
+    { word: "winter", def: "冬天", pos: "n.", phonetic: "[ˈwɪntɚ]", sentence: "It snows heavily during cold <span class='blank'>______</span>." },
+    { word: "yellow", def: "黃色(的)", pos: "adj.", phonetic: "[ˈjɛlo]", sentence: "The warm sun shines with <span class='blank'>______</span> light." }
+  ];
+
+  const distractorsPool = ["美麗的", "快樂的", "危險的", "困難的", "重要的", "便宜的", "明亮的", "安靜的"];
+
+  return baseWords.map((item, idx) => {
+    const dist = distractorsPool.filter(d => d !== item.def).slice(0, 3);
+    return {
+      id: `w_s${stageNum}_${idx}`,
+      word: `${item.word}`,
+      phonetic: item.phonetic,
+      pos: item.pos,
+      def: item.def,
+      sentence: item.sentence,
+      distractors: dist
+    };
+  });
+}
+
+// 4. 魔物原型
+const STAGE_BOSSES = [
+  { name: "迷霧史萊姆", avatar: "🟢", baseHp: 50, atk: 8, sanAtk: 4 },
+  { name: "噬詞野狼", avatar: "🐺", baseHp: 80, atk: 12, sanAtk: 7 },
+  { name: "斷章石像鬼", avatar: "🗿", baseHp: 110, atk: 16, sanAtk: 10 },
+  { name: "失落夢魘龍", avatar: "🐉", baseHp: 150, atk: 20, sanAtk: 14 }
 ];
 
-// 3. 角色進化階級 (Stage Progression)
+// 5. 角色進化
 const CHARACTER_RANKS = [
-  { levelReq: 1, name: "流浪學徒", bonusDesc: "基礎探索者，尚在適應迷宮的語義脈動。", maxHp: 100, maxSan: 100, atkBonus: 1.0 },
-  { levelReq: 3, name: "文字遊俠", bonusDesc: "步伐輕盈！階梯爬升暴擊率 +15%，生命上限 +20。", maxHp: 120, maxSan: 105, atkBonus: 1.2 },
-  { levelReq: 6, name: "符文咒劍士", bonusDesc: "利刃刻滿符文！答對時反饋 3 點 SAN，傷害 +30%。", maxHp: 140, maxSan: 115, atkBonus: 1.35 },
-  { levelReq: 10, name: "真理大賢者", bonusDesc: "通曉萬物真理！全傷害 +50%，階梯晉升免除一次錯誤扣分。", maxHp: 180, maxSan: 130, atkBonus: 1.5 }
+  { levelReq: 1, name: "流浪學徒", bonusDesc: "基礎探索者，專注力穩定。", maxHp: 100, maxSan: 100, atkBonus: 1.0 },
+  { levelReq: 3, name: "文字遊俠", bonusDesc: "階梯暴擊率 +15%，生命上限 +20。", maxHp: 120, maxSan: 105, atkBonus: 1.2 },
+  { levelReq: 6, name: "符文咒劍士", bonusDesc: "答對反饋 3 點 SAN，全傷害 +30%。", maxHp: 140, maxSan: 115, atkBonus: 1.35 },
+  { levelReq: 10, name: "真理大賢者", bonusDesc: "全傷害 +50%，免除首次錯誤扣分。", maxHp: 180, maxSan: 130, atkBonus: 1.5 }
 ];
 
-// 4. 音效引擎 (Web Audio API 振盪器純前端實現，零外部依賴)
+// 6. 音效引擎
 class SoundSystem {
   constructor() {
     this.ctx = null;
@@ -1011,8 +1257,8 @@ class SoundSystem {
 
       if (type === 'correct') {
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(523.25, t); // C5
-        osc.frequency.exponentialRampToValueAtTime(783.99, t + 0.15); // G5
+        osc.frequency.setValueAtTime(523.25, t);
+        osc.frequency.exponentialRampToValueAtTime(783.99, t + 0.15);
         gain.gain.setValueAtTime(0.3, t);
         gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
         osc.start(t);
@@ -1033,47 +1279,47 @@ class SoundSystem {
         gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
         osc.start(t);
         osc.stop(t + 0.15);
-      } else if (type === 'master') {
-        // Fanfare chord
+      } else if (type === 'victory') {
         [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
           const o = this.ctx.createOscillator();
           const g = this.ctx.createGain();
           o.connect(g); g.connect(this.ctx.destination);
-          o.frequency.setValueAtTime(freq, t + i * 0.06);
-          g.gain.setValueAtTime(0.2, t + i * 0.06);
-          g.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
-          o.start(t + i * 0.06); o.stop(t + 0.5);
+          o.frequency.setValueAtTime(freq, t + i * 0.08);
+          g.gain.setValueAtTime(0.25, t + i * 0.08);
+          g.gain.exponentialRampToValueAtTime(0.01, t + 0.6);
+          o.start(t + i * 0.08); o.stop(t + 0.6);
         });
       }
-    } catch(e) {
-      console.warn("Audio error:", e);
-    }
+    } catch(e) {}
   }
 }
 
-// 5. 遊戲主控制器 (Main Game Manager)
+// 7. 遊戲主控制器
 class VocabGame {
   constructor() {
     this.sound = new SoundSystem();
     this.user = this.loadUser();
+    this.currentStageNum = this.user.lastPlayedStage || 1;
+    this.stageWords = [];
     this.gameState = null;
     this.currentWord = null;
     this.currentMonster = null;
-    this.monstersDefeatedInFloor = 0;
-    this.timerInterval = null;
-    this.timeRemaining = 12;
+    this.activeWorldTab = 1;
 
     this.initDOM();
     this.bindEvents();
     this.checkInitialScreen();
   }
 
-  // 使用者個人資料載入與持久化
   loadUser() {
     const data = localStorage.getItem('vocab_user_profile');
     if (data) {
       try {
-        return JSON.parse(data);
+        const u = JSON.parse(data);
+        if (!u.unlockedStage) u.unlockedStage = 1;
+        if (!u.stageRecords) u.stageRecords = {};
+        if (!u.lastPlayedStage) u.lastPlayedStage = 1;
+        return u;
       } catch(e) {}
     }
     return {
@@ -1083,15 +1329,17 @@ class VocabGame {
       exp: 0,
       highScore: 0,
       dailyHighScore: 0,
+      unlockedStage: 1,
+      lastPlayedStage: 1,
+      stageRecords: {}, // { [stageNum]: { stars: 3, cleared: true, highScore: 1200 } }
       lastActiveDate: new Date().toISOString().slice(0, 10),
       unlockedTitles: ['流浪學徒'],
       achievements: {
         first_blood: false,
+        stage_1_clear: false,
         ladder_3: false,
-        ladder_5: false,
-        survivor_san: false
+        ladder_5: false
       },
-      // 記憶階梯持久化記錄：wordId -> ladderLevel (1~5)
       memoryLadderMap: {}
     };
   }
@@ -1100,7 +1348,6 @@ class VocabGame {
     localStorage.setItem('vocab_user_profile', JSON.stringify(this.user));
   }
 
-  // 初始化 DOM 參考
   initDOM() {
     this.screens = {
       auth: document.getElementById('screenAuth'),
@@ -1109,15 +1356,15 @@ class VocabGame {
       event: document.getElementById('screenEvent')
     };
 
-    // Modals
     this.modals = {
+      stageMap: document.getElementById('modalStageMap'),
+      stageClear: document.getElementById('modalStageClear'),
       gameOver: document.getElementById('modalGameOver'),
       grimoire: document.getElementById('modalGrimoire'),
       leaderboard: document.getElementById('modalLeaderboard'),
       achievements: document.getElementById('modalAchievements')
     };
 
-    // HUD Elements
     this.hud = {
       hpText: document.getElementById('hudHpText'),
       hpBar: document.getElementById('hudHpBar'),
@@ -1125,10 +1372,10 @@ class VocabGame {
       sanBar: document.getElementById('hudSanBar'),
       goldText: document.getElementById('hudGoldText'),
       stageText: document.getElementById('hudStageText'),
-      formText: document.getElementById('hudFormText')
+      stageProgressText: document.getElementById('hudStageProgressText'),
+      stageProgressBar: document.getElementById('hudStageProgressBar')
     };
 
-    // Ladder Elements
     this.ladderSteps = [
       document.getElementById('step1'),
       document.getElementById('step2'),
@@ -1138,13 +1385,11 @@ class VocabGame {
     ];
     this.ladderStatusText = document.getElementById('ladderStatusText');
 
-    // Battle Stage Elements
     this.monsterAvatar = document.getElementById('monsterAvatar');
     this.monsterName = document.getElementById('monsterName');
     this.monsterDesc = document.getElementById('monsterDesc');
     this.monsterHpFill = document.getElementById('monsterHpFill');
 
-    // Prompt Card
     this.promptWord = document.getElementById('promptWord');
     this.promptPhonetic = document.getElementById('promptPhonetic');
     this.promptSentence = document.getElementById('promptSentence');
@@ -1152,9 +1397,8 @@ class VocabGame {
     this.combatLog = document.getElementById('combatLog');
   }
 
-  // 綁定事件監聽
   bindEvents() {
-    // 音效開關
+    // 音效切換
     document.getElementById('soundToggle').onclick = () => {
       this.sound.enabled = !this.sound.enabled;
       document.getElementById('soundToggle').textContent = this.sound.enabled ? '🔊' : '🔇';
@@ -1166,34 +1410,60 @@ class VocabGame {
       if (e.key === 'Enter') this.handleAuth();
     };
 
-    // 主選單按鈕
-    document.getElementById('btnStartRun').onclick = () => this.startNewRun();
+    // 主選單
+    document.getElementById('btnResumeNextStage').onclick = () => {
+      this.startStage(this.user.unlockedStage);
+    };
+    document.getElementById('btnOpenStageMap').onclick = () => this.openStageMapModal();
+    document.getElementById('btnCloseStageMap').onclick = () => this.closeModal('stageMap');
+
     document.getElementById('btnSwitchUser').onclick = () => {
       this.user.nickname = '';
       this.saveUser();
       this.switchScreen('auth');
     };
 
-    // 彈窗開啟與關閉
+    // 其他 Modals
     document.getElementById('btnOpenGrimoire').onclick = () => this.openGrimoireModal();
     document.getElementById('btnCloseGrimoire').onclick = () => this.closeModal('grimoire');
-
     document.getElementById('btnOpenLeaderboard').onclick = () => this.openLeaderboardModal();
     document.getElementById('btnCloseLeaderboard').onclick = () => this.closeModal('leaderboard');
-
     document.getElementById('btnOpenAchievements').onclick = () => this.openAchievementsModal();
     document.getElementById('btnCloseAchievements').onclick = () => this.closeModal('achievements');
 
-    // 戰鬥技能按鈕
+    // 戰鬥技能
     document.getElementById('btnSkillErase').onclick = () => this.useSkillErase();
     document.getElementById('btnSkillHeal').onclick = () => this.useSkillHeal();
     document.getElementById('btnSkillFocus').onclick = () => this.useSkillFocus();
+    document.getElementById('btnFleeStage').onclick = () => {
+      if (confirm("確定要暫時撤退回主選單嗎？本關進度將不會結算。")) {
+        this.updateMenuUI();
+        this.switchScreen('menu');
+      }
+    };
 
-    // 結算畫面選項按鈕
+    // 通關結算按鈕
+    document.getElementById('btnNextStage').onclick = () => {
+      this.closeModal('stageClear');
+      this.startStage(this.currentStageNum + 1);
+    };
+    document.getElementById('btnReturnToMap').onclick = () => {
+      this.closeModal('stageClear');
+      this.updateMenuUI();
+      this.switchScreen('menu');
+      this.openStageMapModal();
+    };
+    document.getElementById('btnReturnHomeFromClear').onclick = () => {
+      this.closeModal('stageClear');
+      this.updateMenuUI();
+      this.switchScreen('menu');
+    };
+
+    // 失敗結算按鈕
     document.getElementById('btnRevive').onclick = () => this.handleRevive();
     document.getElementById('btnRestartGame').onclick = () => {
       this.closeModal('gameOver');
-      this.startNewRun();
+      this.startStage(this.currentStageNum);
     };
     document.getElementById('btnReturnHome').onclick = () => {
       this.closeModal('gameOver');
@@ -1201,7 +1471,7 @@ class VocabGame {
       this.switchScreen('menu');
     };
 
-    // 魔典分類過濾
+    // 魔典過濾器
     document.querySelectorAll('#grimoireFilters button').forEach(btn => {
       btn.onclick = (e) => {
         const filter = e.target.getAttribute('data-filter');
@@ -1210,12 +1480,9 @@ class VocabGame {
     });
   }
 
-  // 畫面切換
   switchScreen(screenKey) {
     Object.values(this.screens).forEach(s => s.classList.remove('active'));
-    if (this.screens[screenKey]) {
-      this.screens[screenKey].classList.add('active');
-    }
+    if (this.screens[screenKey]) this.screens[screenKey].classList.add('active');
   }
 
   openModal(modalKey) {
@@ -1250,8 +1517,6 @@ class VocabGame {
 
   updateMenuUI() {
     document.getElementById('menuPlayerName').textContent = this.user.nickname;
-    
-    // 計算型態
     const form = this.getCurrentForm();
     document.getElementById('menuPlayerTitle').textContent = form.name;
     document.getElementById('menuPlayerBonus').textContent = `被動特質：${form.bonusDesc}`;
@@ -1259,12 +1524,31 @@ class VocabGame {
     document.getElementById('menuHighScore').textContent = this.user.highScore.toLocaleString();
     document.getElementById('menuDailyScore').textContent = this.user.dailyHighScore.toLocaleString();
 
-    // 統計階梯 5 永恆單字
+    // 關卡進度與星數統計
+    const unlocked = this.user.unlockedStage;
+    document.getElementById('menuProgressText').textContent = `已解鎖至 第 ${unlocked} 關 / 共 60 關`;
+    const pct = Math.min(100, Math.round((unlocked / 60) * 100));
+    document.getElementById('menuProgressBar').style.width = `${pct}%`;
+
+    let totalStars = 0;
+    let clearedCount = 0;
+    Object.values(this.user.stageRecords).forEach(r => {
+      if (r.cleared) clearedCount++;
+      totalStars += (r.stars || 0);
+    });
+
+    document.getElementById('menuTotalStars').textContent = `獲得總星數：⭐ ${totalStars} / 180`;
+    document.getElementById('menuClearedCount').textContent = clearedCount;
+
+    // 記憶階梯登頂單字統計
     let mastered = 0;
     Object.values(this.user.memoryLadderMap).forEach(lvl => {
       if (lvl >= 5) mastered++;
     });
-    document.getElementById('menuMasteredCount').textContent = `已登頂精通單字：${mastered} / ${VOCAB_DATABASE.length} 字`;
+    document.getElementById('menuMasteredCount').textContent = `已登頂精通單字：${mastered} 字`;
+
+    // 繼續闖關按鈕標籤
+    document.getElementById('btnResumeStageLabel').textContent = `第 ${unlocked} 關`;
   }
 
   getCurrentForm() {
@@ -1278,50 +1562,124 @@ class VocabGame {
   }
 
   // =========================================================================
-  // 核心遊戲迴圈 (Core Game Loop & Memory Ladder Engine)
+  // 關卡地圖系統 (Stage Map System)
   // =========================================================================
-  startNewRun() {
+  openStageMapModal() {
+    this.renderWorldTabs();
+    this.renderStageGrid(this.activeWorldTab);
+    this.openModal('stageMap');
+  }
+
+  renderWorldTabs() {
+    const container = document.getElementById('worldTabsContainer');
+    container.innerHTML = '';
+    WORLDS.forEach(w => {
+      const btn = document.createElement('button');
+      btn.className = `world-tab-btn ${this.activeWorldTab === w.id ? 'active' : ''}`;
+      btn.textContent = `界域 ${w.id} · ${w.name}`;
+      btn.onclick = () => {
+        this.activeWorldTab = w.id;
+        this.renderWorldTabs();
+        this.renderStageGrid(w.id);
+      };
+      container.appendChild(btn);
+    });
+  }
+
+  renderStageGrid(worldId) {
+    const container = document.getElementById('stageGridContainer');
+    container.innerHTML = '';
+
+    const world = WORLDS.find(w => w.id === worldId) || WORLDS[0];
+    const [startStage, endStage] = world.range;
+
+    for (let s = startStage; s <= endStage; s++) {
+      const card = document.createElement('div');
+      const isUnlocked = s <= this.user.unlockedStage;
+      const isCleared = !!(this.user.stageRecords[s] && this.user.stageRecords[s].cleared);
+      const isCurrent = s === this.user.unlockedStage;
+      const stars = (this.user.stageRecords[s] && this.user.stageRecords[s].stars) || 0;
+
+      let cls = 'stage-card';
+      if (!isUnlocked) cls += ' locked';
+      else if (isCleared) cls += ' cleared';
+      else if (isCurrent) cls += ' current';
+      card.className = cls;
+
+      let starsStr = '';
+      for (let i = 0; i < 3; i++) {
+        starsStr += (i < stars) ? '⭐' : '☆';
+      }
+
+      card.innerHTML = `
+        <div class="stage-num">${isUnlocked ? `第 ${s} 關` : '🔒 鎖定'}</div>
+        <div class="stage-stars">${isUnlocked ? starsStr : ''}</div>
+        <div class="stage-words-tag">20 個生字</div>
+      `;
+
+      if (isUnlocked) {
+        card.onclick = () => {
+          this.closeModal('stageMap');
+          this.startStage(s);
+        };
+      }
+      container.appendChild(card);
+    }
+  }
+
+  // =========================================================================
+  // 核心闖關戰鬥邏輯 (Stage Combat & Memory Ladder)
+  // =========================================================================
+  startStage(stageNum) {
+    this.currentStageNum = stageNum;
+    this.user.lastPlayedStage = stageNum;
+    this.saveUser();
+
+    // 載入本關 20 個單字
+    this.stageWords = getStageWordList(stageNum);
     const form = this.getCurrentForm();
+
+    // 一關設計：回答 8 題挑戰完成即可過關 (遇 2 次小怪 + 1 次關底守護者)
     this.gameState = {
-      runId: 'run_' + Date.now(),
-      floor: 1,
+      runId: 'stage_' + stageNum + '_' + Date.now(),
+      stageNum: stageNum,
+      targetQuestions: 8,
+      currentQuestionIdx: 0,
       score: 0,
       hp: form.maxHp,
       maxHp: form.maxHp,
       san: form.maxSan,
       maxSan: form.maxSan,
-      gold: 100,
-      wordsReviewed: 0,
-      correctAnswers: 0,
-      masteredThisRun: 0,
+      gold: 50,
+      correctCount: 0,
+      wrongCount: 0,
+      masteredThisStage: 0,
       combo: 0
     };
 
-    this.monstersDefeatedInFloor = 0;
     this.switchScreen('game');
     this.updateHUD();
-    this.log(`===== 開始第 ${this.gameState.floor} 層探索 =====`, 'log-gold');
-    this.spawnNextEncounter();
+    this.log(`===== 進入 第 ${stageNum} 關 冒險開始！(精選 20 單字) =====`, 'log-gold');
+    this.spawnStageEncounter();
   }
 
   updateHUD() {
     if (!this.gameState) return;
-    const form = this.getCurrentForm();
     
-    // HP
     this.hud.hpText.textContent = `${Math.max(0, Math.round(this.gameState.hp))}/${this.gameState.maxHp}`;
     this.hud.hpBar.style.width = `${Math.max(0, (this.gameState.hp / this.gameState.maxHp) * 100)}%`;
 
-    // SAN
     this.hud.sanText.textContent = `${Math.max(0, Math.round(this.gameState.san))}/${this.gameState.maxSan}`;
     this.hud.sanBar.style.width = `${Math.max(0, (this.gameState.san / this.gameState.maxSan) * 100)}%`;
 
-    // Gold & Stage & Form
     this.hud.goldText.textContent = this.gameState.gold;
-    this.hud.stageText.textContent = `第 ${Math.ceil(this.gameState.floor / 3)} 區 · 迷宮 ${this.gameState.floor} 層`;
-    this.hud.formText.textContent = `${form.name} (Lv.${this.user.level})`;
+    this.hud.stageText.textContent = `第 ${this.gameState.stageNum} 關 · 20字階梯`;
 
-    // SAN 低於 30 觸發混亂視覺
+    // 本關進度條 (Question progress)
+    const qPct = Math.min(100, Math.round((this.gameState.currentQuestionIdx / this.gameState.targetQuestions) * 100));
+    this.hud.stageProgressText.textContent = `${this.gameState.currentQuestionIdx}/${this.gameState.targetQuestions} 題`;
+    this.hud.stageProgressBar.style.width = `${qPct}%`;
+
     if (this.gameState.san < 30) {
       document.getElementById('battleStage').style.filter = "hue-rotate(90deg) contrast(120%)";
     } else {
@@ -1329,38 +1687,34 @@ class VocabGame {
     }
   }
 
-  // 生成下一場遭遇（魔物或隨機奇遇）
-  spawnNextEncounter() {
-    // 每前進 4 隻怪，插入一次隨機事件或休息站
-    if (this.monstersDefeatedInFloor > 0 && this.monstersDefeatedInFloor % 3 === 0) {
-      this.triggerRandomEvent();
+  spawnStageEncounter() {
+    // 檢查是否已達成通關條件
+    if (this.gameState.currentQuestionIdx >= this.gameState.targetQuestions) {
+      this.handleStageVictory();
       return;
     }
 
-    this.spawnMonster();
-    this.pickNextVocabWord();
-    this.renderQuestion();
-  }
-
-  spawnMonster() {
-    const idx = Math.min(Math.floor((this.gameState.floor - 1) / 2), MONSTERS.length - 1);
-    const template = MONSTERS[idx];
-    const floorScaling = 1 + (this.gameState.floor - 1) * 0.25;
+    // 產生魔物
+    const isBoss = (this.gameState.currentQuestionIdx >= this.gameState.targetQuestions - 2);
+    const bossTemplate = isBoss ? STAGE_BOSSES[STAGE_BOSSES.length - 1] : STAGE_BOSSES[this.gameState.stageNum % (STAGE_BOSSES.length - 1)];
 
     this.currentMonster = {
-      name: template.name,
-      avatar: template.avatar,
-      desc: template.desc,
-      maxHp: Math.round(template.baseHp * floorScaling),
-      hp: Math.round(template.baseHp * floorScaling),
-      atk: Math.round(template.atk * floorScaling),
-      sanAtk: Math.round(template.sanAtk * floorScaling)
+      name: isBoss ? `👑 ${bossTemplate.name} (關底首領)` : bossTemplate.name,
+      avatar: isBoss ? "🐲" : bossTemplate.avatar,
+      desc: isBoss ? "鎮守本關詞義封印的大魔物！" : "試圖抹去記憶的迷宮生物。",
+      maxHp: isBoss ? 120 : 60,
+      hp: isBoss ? 120 : 60,
+      atk: bossTemplate.atk,
+      sanAtk: bossTemplate.sanAtk
     };
 
     this.monsterAvatar.textContent = this.currentMonster.avatar;
-    this.monsterName.textContent = `${this.currentMonster.name} (Lv.${this.gameState.floor})`;
+    this.monsterName.textContent = this.currentMonster.name;
     this.monsterDesc.textContent = this.currentMonster.desc;
     this.updateMonsterHpUI();
+
+    this.pickStageVocabWord();
+    this.renderQuestion();
   }
 
   updateMonsterHpUI() {
@@ -1369,19 +1723,16 @@ class VocabGame {
     this.monsterHpFill.style.width = `${pct}%`;
   }
 
-  // 記憶階梯演算法核心挑詞 (Prioritize words with lower ladder step)
-  pickNextVocabWord() {
-    // 依記憶階梯權重：階梯 1 權重 5，階梯 2 權重 4，階梯 3 權重 3，階梯 4 權重 2，階梯 5 權重 1
+  // 核心：在當前關卡的 20 個單字內，依據記憶階梯權重選詞
+  pickStageVocabWord() {
     const weightedList = [];
-    VOCAB_DATABASE.forEach(v => {
-      const ladder = this.user.memoryLadderMap[v.id] || 1;
-      const weight = Math.max(1, 6 - ladder);
+    this.stageWords.forEach(w => {
+      const ladder = this.user.memoryLadderMap[w.id] || 1;
+      const weight = Math.max(1, 6 - ladder); // 階梯 1 (生疏) 出現頻率最高
       for (let i = 0; i < weight; i++) {
-        weightedList.push(v);
+        weightedList.push(w);
       }
     });
-
-    // 隨機抽選
     this.currentWord = weightedList[Math.floor(Math.random() * weightedList.length)];
   }
 
@@ -1389,7 +1740,7 @@ class VocabGame {
     const wordObj = this.currentWord;
     const currentLadder = this.user.memoryLadderMap[wordObj.id] || 1;
 
-    // 更新記憶階梯 HUD
+    // 記憶階梯燈號更新
     this.ladderSteps.forEach((stepEl, idx) => {
       stepEl.className = 'ladder-step';
       if (idx + 1 === currentLadder) {
@@ -1406,14 +1757,11 @@ class VocabGame {
     ];
     this.ladderStatusText.textContent = ladderTitles[currentLadder - 1];
 
-    // 更新題卡
     this.promptWord.textContent = wordObj.word;
     this.promptPhonetic.textContent = `${wordObj.phonetic} · ${wordObj.pos}`;
     this.promptSentence.innerHTML = `${wordObj.sentence} <div style="font-size:0.85rem; color:#9ca3af; margin-top:4px;">(${wordObj.def})</div>`;
 
-    // 產生 4 個選項 (1 正確 + 3 混淆)
     const options = [wordObj.def, ...wordObj.distractors];
-    // 洗牌
     options.sort(() => Math.random() - 0.5);
 
     this.optionsGrid.innerHTML = '';
@@ -1426,87 +1774,62 @@ class VocabGame {
     });
   }
 
-  // 處理玩家答題
   handleAnswer(selectedDef, btnElement) {
-    // 禁用所有按鈕防止重複點擊
     const allBtns = this.optionsGrid.querySelectorAll('.option-btn');
     allBtns.forEach(b => b.disabled = true);
 
     const isCorrect = (selectedDef === this.currentWord.def);
-    this.gameState.wordsReviewed++;
+    this.gameState.currentQuestionIdx++;
 
     if (isCorrect) {
-      // 答對邏輯
       this.sound.play('correct');
       btnElement.classList.add('correct');
-      this.gameState.correctAnswers++;
+      this.gameState.correctCount++;
       this.gameState.combo++;
 
-      // 記憶階梯爬升 (+1 階，最高 5 階)
+      // 記憶階梯攀登
       const prevLvl = this.user.memoryLadderMap[this.currentWord.id] || 1;
       const nextLvl = Math.min(5, prevLvl + 1);
       this.user.memoryLadderMap[this.currentWord.id] = nextLvl;
 
       if (nextLvl === 5 && prevLvl < 5) {
-        this.sound.play('master');
-        this.gameState.masteredThisRun++;
-        this.log(`✨ 符文昇華！單字【${this.currentWord.word}】成功登頂階梯 5「永恆封印」！`, 'log-gold');
-        this.checkAchievement('ladder_5');
-      } else if (nextLvl >= 3) {
-        this.checkAchievement('ladder_3');
+        this.gameState.masteredThisStage++;
+        this.log(`✨ 符文昇華！單字【${this.currentWord.word}】登頂階梯 5 永恆封印！`, 'log-gold');
       }
 
-      this.checkAchievement('first_blood');
-
-      // 傷害計算 (受角色形態與 Combo 加成)
+      // 戰鬥傷害
       const form = this.getCurrentForm();
-      const comboBonus = 1 + (this.gameState.combo - 1) * 0.1;
-      const ladderBonus = 1 + (nextLvl - 1) * 0.15;
-      const totalDmg = Math.round(35 * form.atkBonus * comboBonus * ladderBonus);
-
-      this.currentMonster.hp -= totalDmg;
+      const dmg = Math.round(40 * form.atkBonus * (1 + this.gameState.combo * 0.1));
+      this.currentMonster.hp -= dmg;
       this.sound.play('hit');
       this.updateMonsterHpUI();
-      this.log(`⚔️ 命中！對【${this.currentMonster.name}】造成 ${totalDmg} 點字靈傷害！(Combo x${this.gameState.combo})`, 'log-success');
 
-      // 分數與金幣增加
-      const earnedGold = 10 + nextLvl * 2;
-      const earnedScore = 100 * nextLvl * this.gameState.combo;
-      this.gameState.gold += earnedGold;
-      this.gameState.score += earnedScore;
+      this.gameState.gold += 12;
+      this.gameState.score += 120 * nextLvl;
       this.addExp(20);
 
-      // 檢查魔物是否陣亡
+      this.log(`⚔️ 正確！對【${this.currentMonster.name}】造成 ${dmg} 傷害！(Combo x${this.gameState.combo})`, 'log-success');
+
       setTimeout(() => {
-        if (this.currentMonster.hp <= 0) {
-          this.handleMonsterDefeat();
-        } else {
-          // 下一輪答題
-          this.pickNextVocabWord();
-          this.renderQuestion();
-        }
         this.updateHUD();
+        this.spawnStageEncounter();
       }, 700);
 
     } else {
-      // 答錯邏輯
       this.sound.play('wrong');
       btnElement.classList.add('wrong');
-      this.gameState.combo = 0; // 中斷 Combo
+      this.gameState.wrongCount++;
+      this.gameState.combo = 0;
 
-      // 高亮正確答案
       allBtns.forEach(b => {
-        if (b.innerText.includes(this.currentWord.def)) {
-          b.classList.add('correct');
-        }
+        if (b.innerText.includes(this.currentWord.def)) b.classList.add('correct');
       });
 
-      // 記憶階梯滑落懲罰 (跌落 1 階，最低 1 階)
+      // 階梯跌落
       const prevLvl = this.user.memoryLadderMap[this.currentWord.id] || 1;
-      const droppedLvl = Math.max(1, prevLvl - 1);
-      this.user.memoryLadderMap[this.currentWord.id] = droppedLvl;
+      const nextLvl = Math.max(1, prevLvl - 1);
+      this.user.memoryLadderMap[this.currentWord.id] = nextLvl;
 
-      // 承受魔物傷害 (HP 扣除與 SAN 扣除)
       const hpLoss = this.currentMonster.atk;
       const sanLoss = this.currentMonster.sanAtk;
       this.gameState.hp -= hpLoss;
@@ -1515,16 +1838,14 @@ class VocabGame {
       document.getElementById('battleStage').classList.add('shake-anim');
       setTimeout(() => document.getElementById('battleStage').classList.remove('shake-anim'), 400);
 
-      this.log(`💥 答錯！正確意義為「${this.currentWord.def}」。受到 ${hpLoss} 點傷害，理智流失 ${sanLoss}！階梯降至 ${droppedLvl}。`, 'log-danger');
+      this.log(`💥 答錯！正確為「${this.currentWord.def}」。受到 ${hpLoss} 傷害，階梯降至 ${nextLvl}。`, 'log-danger');
       this.updateHUD();
 
-      // 檢查 Game Over 條件 (HP <= 0 或 SAN <= 0)
       setTimeout(() => {
         if (this.gameState.hp <= 0 || this.gameState.san <= 0) {
           this.handleGameOver();
         } else {
-          this.pickNextVocabWord();
-          this.renderQuestion();
+          this.spawnStageEncounter();
         }
       }, 1200);
     }
@@ -1532,45 +1853,97 @@ class VocabGame {
     this.saveUser();
   }
 
-  // 魔物擊倒處理
-  handleMonsterDefeat() {
-    this.monstersDefeatedInFloor++;
-    this.log(`🏆 擊敗了【${this.currentMonster.name}】！獲得豐厚探險戰利品。`, 'log-gold');
+  // =========================================================================
+  // 通關勝利結算 (Stage Victory Settlement)
+  // =========================================================================
+  handleStageVictory() {
+    this.sound.play('victory');
+    const total = this.gameState.correctCount + this.gameState.wrongCount;
+    const accuracy = total > 0 ? Math.round((this.gameState.correctCount / total) * 100) : 100;
 
-    // 每擊倒 2 隻怪，推進層數
-    if (this.monstersDefeatedInFloor % 2 === 0) {
-      this.gameState.floor++;
-      this.log(`⏫ 突破迷宮！深入第 ${this.gameState.floor} 層！`, 'log-info');
+    // 計算星級 (1~3星)
+    let stars = 1;
+    if (accuracy >= 80) stars = 2;
+    if (accuracy >= 90) stars = 3;
+
+    // 儲存關卡紀錄
+    const prevRecord = this.user.stageRecords[this.currentStageNum] || { stars: 0, highScore: 0 };
+    this.user.stageRecords[this.currentStageNum] = {
+      cleared: true,
+      stars: Math.max(prevRecord.stars, stars),
+      highScore: Math.max(prevRecord.highScore, this.gameState.score)
+    };
+
+    // 自動解鎖下一關
+    if (this.currentStageNum === this.user.unlockedStage && this.user.unlockedStage < 60) {
+      this.user.unlockedStage = this.currentStageNum + 1;
     }
 
-    this.updateHUD();
-    setTimeout(() => {
-      this.spawnNextEncounter();
-    }, 600);
+    this.saveUser();
+
+    // 更新通關彈窗
+    let starsStr = '';
+    for (let i = 0; i < 3; i++) starsStr += (i < stars) ? '⭐' : '☆';
+    document.getElementById('stageClearStars').textContent = starsStr;
+    document.getElementById('clearStageName').textContent = `第 ${this.currentStageNum} 關`;
+    document.getElementById('clearAccuracy').textContent = `${accuracy}% (${this.gameState.correctCount}/${total} 題)`;
+    document.getElementById('clearMastered').textContent = `${this.gameState.masteredThisStage} 個`;
+    document.getElementById('clearScore').textContent = `+${this.gameState.score.toLocaleString()}`;
+    document.getElementById('nextStageLabel').textContent = `第 ${this.currentStageNum + 1} 關`;
+
+    this.openModal('stageClear');
   }
 
-  // 經驗值與升級
+  // 失敗結算
+  handleGameOver() {
+    const isSanDeath = (this.gameState.san <= 0);
+    const titleEl = document.getElementById('gameOverTitle');
+    const epitaphEl = document.getElementById('gameOverEpitaph');
+
+    if (isSanDeath) {
+      titleEl.textContent = "🧠 理智崩潰 · 陷入永恆發狂";
+      epitaphEl.innerHTML = `「未知的詞義符文蠶食了心智... 在第 <strong>${this.currentStageNum}</strong> 關中，你暫時失去了方向。」`;
+    } else {
+      titleEl.textContent = "💀 戰體力竭 · 倒在階梯之底";
+      epitaphEl.innerHTML = `「魔物的利爪突破了防線。在第 <strong>${this.currentStageNum}</strong> 關的石階上，等待下一次的重整出發。」`;
+    }
+
+    const total = this.gameState.correctCount + this.gameState.wrongCount;
+    const accuracy = total > 0 ? Math.round((this.gameState.correctCount / total) * 100) : 0;
+
+    document.getElementById('resFloor').textContent = `第 ${this.currentStageNum} 關`;
+    document.getElementById('resWordCount').textContent = `${total} 個`;
+    document.getElementById('resAccuracy').textContent = `${accuracy}%`;
+    document.getElementById('resScore').textContent = this.gameState.score.toLocaleString();
+
+    this.openModal('gameOver');
+  }
+
+  handleRevive() {
+    const penalty = Math.round(this.gameState.score * 0.2);
+    this.gameState.score = Math.max(0, this.gameState.score - penalty);
+    this.gameState.hp = Math.round(this.gameState.maxHp * 0.5);
+    this.gameState.san = Math.round(this.gameState.maxSan * 0.5);
+
+    this.closeModal('gameOver');
+    this.updateHUD();
+    this.log(`✨ 命運之石碎裂！支付 ${penalty} 點分數在第 ${this.currentStageNum} 關原地復活！`, 'log-gold');
+    this.spawnStageEncounter();
+  }
+
   addExp(amount) {
     this.user.exp += amount;
-    const reqExp = this.user.level * 100;
-    if (this.user.exp >= reqExp) {
-      this.user.exp -= reqExp;
+    const req = this.user.level * 100;
+    if (this.user.exp >= req) {
+      this.user.exp -= req;
       this.user.level++;
-      this.log(`🎉 恭喜升級！當前冒險者等級達到 Lv.${this.user.level}！`, 'log-gold');
-      
-      // 檢查稱號解鎖
-      const form = this.getCurrentForm();
-      if (!this.user.unlockedTitles.includes(form.name)) {
-        this.user.unlockedTitles.push(form.name);
-        this.log(`👑 解鎖全新角色型態：【${form.name}】！`, 'log-info');
-      }
+      this.log(`🎉 升級！勇者等級達到 Lv.${this.user.level}！`, 'log-gold');
     }
   }
 
-  // 戰鬥輔助技能 (消耗 SAN 或 Gold)
   useSkillErase() {
     if (this.gameState.san <= 15) {
-      alert("理智值不足 15，強行施法將導致發狂！");
+      alert("理智值不足 15！");
       return;
     }
     this.gameState.san -= 15;
@@ -1578,13 +1951,10 @@ class VocabGame {
 
     const allBtns = Array.from(this.optionsGrid.querySelectorAll('.option-btn'));
     const wrongBtns = allBtns.filter(b => !b.innerText.includes(this.currentWord.def));
-
-    // 隨機隱藏 2 個錯誤選項
     wrongBtns.sort(() => Math.random() - 0.5);
     if (wrongBtns[0]) wrongBtns[0].classList.add('disabled');
     if (wrongBtns[1]) wrongBtns[1].classList.add('disabled');
-
-    this.log("✒️ 消耗 15 SAN 發動【符文抹除】，清除了兩個偽裝選項！", 'log-info');
+    this.log("✒️ 發動【符文抹除】，清除了兩個偽裝選項！", 'log-info');
   }
 
   useSkillHeal() {
@@ -1609,206 +1979,7 @@ class VocabGame {
     this.log("🕯️ 點燃凝神熏香，恢復 30 點理智精神！", 'log-info');
   }
 
-  // =========================================================================
-  // 隨機 Roguelite 分支奇遇事件 (Random Events)
-  // =========================================================================
-  triggerRandomEvent() {
-    const events = [
-      {
-        title: "⛲ 靜謐的記憶泉源",
-        desc: "清澈的泉水自發光的古代石碑中湧出，你感受到紊亂的心智在此刻得到撫慰。",
-        choices: [
-          {
-            text: "飲用泉水 (恢復 40 點生命值)",
-            action: () => {
-              this.gameState.hp = Math.min(this.gameState.maxHp, this.gameState.hp + 40);
-              this.log("你喝下甘美泉水，傷口迅速癒合。", "log-success");
-              this.returnToDungeon();
-            }
-          },
-          {
-            text: "默想古碑文 (恢復 35 點理智值)",
-            action: () => {
-              this.gameState.san = Math.min(this.gameState.maxSan, this.gameState.san + 35);
-              this.log("你在泉邊靜坐冥想，思緒重新變得清晰。", "log-info");
-              this.returnToDungeon();
-            }
-          }
-        ]
-      },
-      {
-        title: "🛒 迷宮流浪商人",
-        desc: "一位身披兜帽的神秘商人向你招手，他的背包裡裝滿了冒險者遺留下的古老符文器皿。",
-        choices: [
-          {
-            text: "購買「心靈守護護符」 (花費 40 金幣，上限 +15 SAN)",
-            action: () => {
-              if (this.gameState.gold >= 40) {
-                this.gameState.gold -= 40;
-                this.gameState.maxSan += 15;
-                this.gameState.san += 15;
-                this.log("購買成功！理智上限增加 15 點。", "log-gold");
-              } else {
-                alert("金幣不足！商人冷冷地收回了商品。");
-              }
-              this.returnToDungeon();
-            }
-          },
-          {
-            text: "禮貌告別並繼續前進",
-            action: () => {
-              this.log("你與商人告別，繼續踏上階梯。", "log-info");
-              this.returnToDungeon();
-            }
-          }
-        ]
-      }
-    ];
-
-    const ev = events[Math.floor(Math.random() * events.length)];
-    document.getElementById('eventTitle').textContent = ev.title;
-    document.getElementById('eventDesc').textContent = ev.desc;
-
-    const choicesContainer = document.getElementById('eventChoices');
-    choicesContainer.innerHTML = '';
-    ev.choices.forEach(ch => {
-      const btn = document.createElement('button');
-      btn.className = 'btn btn-primary';
-      btn.textContent = ch.text;
-      btn.onclick = ch.action;
-      choicesContainer.appendChild(btn);
-    });
-
-    this.switchScreen('event');
-  }
-
-  returnToDungeon() {
-    this.monstersDefeatedInFloor++;
-    this.updateHUD();
-    this.switchScreen('game');
-    this.spawnNextEncounter();
-  }
-
-  // =========================================================================
-  // Game Over 結算與接關機制 (Game Over & Revive Mechanics)
-  // =========================================================================
-  handleGameOver() {
-    // 判斷死因
-    const isSanDeath = (this.gameState.san <= 0);
-    const titleEl = document.getElementById('gameOverTitle');
-    const epitaphEl = document.getElementById('gameOverEpitaph');
-
-    if (isSanDeath) {
-      titleEl.textContent = "🧠 理智崩潰 · 陷入永恆發狂";
-      epitaphEl.innerHTML = `「未知的詞彙如潮水般湧入你的意識，繁複的符文將理智蠶食殆盡...<br>在第 <strong>${this.gameState.floor}</strong> 層迷宮的陰影中，你最終失去了辨識文字的能力。」`;
-    } else {
-      titleEl.textContent = "💀 戰體力竭 · 倒在階梯之底";
-      epitaphEl.innerHTML = `「魔物的利爪擊穿了最後的護甲。你緊握著寫滿詞彙的筆記，氣息漸微...<br>在第 <strong>${this.gameState.floor}</strong> 層的石階上，等待下一個勇敢的文字使徒。」`;
-    }
-
-    // 計算精準數據
-    const accuracy = this.gameState.wordsReviewed > 0 
-      ? Math.round((this.gameState.correctAnswers / this.gameState.wordsReviewed) * 100) 
-      : 0;
-
-    document.getElementById('resFloor').textContent = `第 ${this.gameState.floor} 層`;
-    document.getElementById('resWordCount').textContent = `${this.gameState.wordsReviewed} 個`;
-    document.getElementById('resMastered').textContent = `${this.gameState.masteredThisRun} 個`;
-    document.getElementById('resAccuracy').textContent = `${accuracy}%`;
-    document.getElementById('resScore').textContent = this.gameState.score.toLocaleString();
-
-    // 更新個人歷史最高分
-    if (this.gameState.score > this.user.highScore) {
-      this.user.highScore = this.gameState.score;
-    }
-    if (this.gameState.score > this.user.dailyHighScore) {
-      this.user.dailyHighScore = this.gameState.score;
-    }
-    this.saveUser();
-
-    // 儲存至世界排行榜
-    this.recordLeaderboardEntry(this.gameState.score, this.gameState.floor);
-
-    this.openModal('gameOver');
-  }
-
-  // 接關 (Revive) 機制
-  handleRevive() {
-    // 代價：扣除 20% 當前分數
-    const penalty = Math.round(this.gameState.score * 0.2);
-    this.gameState.score = Math.max(0, this.gameState.score - penalty);
-
-    // 恢復 50% HP 與 50% SAN
-    this.gameState.hp = Math.round(this.gameState.maxHp * 0.5);
-    this.gameState.san = Math.round(this.gameState.maxSan * 0.5);
-
-    // 降低當前魔物難度
-    if (this.currentMonster) {
-      this.currentMonster.hp = Math.round(this.currentMonster.maxHp * 0.4);
-    }
-
-    this.closeModal('gameOver');
-    this.updateHUD();
-    this.updateMonsterHpUI();
-    this.log(`✨ 命運之石碎裂！你支付了 ${penalty} 點榮譽分重生！恢復 50% 狀態。`, 'log-gold');
-    this.renderQuestion();
-  }
-
-  // =========================================================================
-  // 排行榜與資料紀錄 (Leaderboard & Persistence)
-  // =========================================================================
-  recordLeaderboardEntry(score, floor) {
-    let board = [];
-    try {
-      board = JSON.parse(localStorage.getItem('vocab_leaderboard') || '[]');
-    } catch(e) {}
-
-    board.push({
-      nickname: this.user.nickname,
-      title: this.getCurrentForm().name,
-      floor: floor,
-      score: score,
-      date: new Date().toLocaleDateString()
-    });
-
-    // 依照分數排序取前 10
-    board.sort((a, b) => b.score - a.score);
-    board = board.slice(0, 10);
-    localStorage.setItem('vocab_leaderboard', JSON.stringify(board));
-  }
-
-  openLeaderboardModal() {
-    let board = [];
-    try {
-      board = JSON.parse(localStorage.getItem('vocab_leaderboard') || '[]');
-    } catch(e) {}
-
-    const tbody = document.getElementById('leaderboardTableBody');
-    tbody.innerHTML = '';
-
-    if (board.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#9ca3af;">尚無紀錄，快去挑戰第一名吧！</td></tr>';
-    } else {
-      board.forEach((item, idx) => {
-        const tr = document.createElement('tr');
-        const medal = idx === 0 ? '🥇 1' : (idx === 1 ? '🥈 2' : (idx === 2 ? '🥉 3' : idx + 1));
-        tr.innerHTML = `
-          <td style="font-weight:700; color:var(--gold);">${medal}</td>
-          <td>${item.nickname}</td>
-          <td><span class="badge badge-purple">${item.title}</span></td>
-          <td>第 ${item.floor} 層</td>
-          <td style="font-weight:700; color:#34d399;">${item.score.toLocaleString()}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    this.openModal('leaderboard');
-  }
-
-  // =========================================================================
-  // 記憶魔典與成就系統 (Grimoire & Achievements)
-  // =========================================================================
+  // 魔典與排行榜
   openGrimoireModal() {
     this.renderGrimoireList('all');
     this.openModal('grimoire');
@@ -1818,7 +1989,14 @@ class VocabGame {
     const tbody = document.getElementById('grimoireTableBody');
     tbody.innerHTML = '';
 
-    const filtered = VOCAB_DATABASE.filter(item => {
+    // 取已通關與當前關卡的所有單字
+    let allCurrentWords = [];
+    for (let s = 1; s <= Math.max(2, this.user.unlockedStage); s++) {
+      const words = getStageWordList(s).map(w => ({ ...w, stageNum: s }));
+      allCurrentWords = allCurrentWords.concat(words);
+    }
+
+    const filtered = allCurrentWords.filter(item => {
       const lvl = this.user.memoryLadderMap[item.id] || 1;
       if (filter === 'ladder1') return lvl === 1;
       if (filter === 'ladder3') return lvl === 3;
@@ -1831,6 +2009,7 @@ class VocabGame {
       const tr = document.createElement('tr');
       const badgeClass = lvl === 5 ? 'badge-gold' : (lvl >= 3 ? 'badge-cyan' : 'badge-purple');
       tr.innerHTML = `
+        <td><span class="badge" style="background:#1e293b;">第 ${item.stageNum} 關</span></td>
         <td style="font-weight:700; color:#38bdf8;">${item.word}</td>
         <td style="font-family:monospace; color:#9ca3af;">${item.pos} ${item.phonetic}</td>
         <td>${item.def}</td>
@@ -1840,19 +2019,33 @@ class VocabGame {
     });
   }
 
+  openLeaderboardModal() {
+    const tbody = document.getElementById('leaderboardTableBody');
+    tbody.innerHTML = `
+      <tr>
+        <td style="font-weight:700; color:var(--gold);">🥇 1</td>
+        <td>${this.user.nickname || '見習勇者'}</td>
+        <td><span class="badge badge-purple">${this.getCurrentForm().name}</span></td>
+        <td>第 ${this.user.unlockedStage} 關</td>
+        <td>⭐ ${Object.values(this.user.stageRecords).reduce((acc, cur) => acc + (cur.stars||0), 0)}</td>
+        <td style="font-weight:700; color:#34d399;">${(this.user.highScore || 2400).toLocaleString()}</td>
+      </tr>
+    `;
+    this.openModal('leaderboard');
+  }
+
   openAchievementsModal() {
     const achievementsList = [
-      { id: 'first_blood', name: '符文初醒', desc: '在迷宮中完成第一次正確字彙答對', badge: '勇者之印' },
-      { id: 'ladder_3', name: '攀登者', desc: '將任一單字推升至記憶階梯 3 (脈絡掌握)', badge: '階梯漫步者' },
-      { id: 'ladder_5', name: '永恆之主', desc: '將任一單字推升至記憶階梯 5 永恆精通', badge: '詞彙暴君' },
-      { id: 'survivor_san', name: '理智磐石', desc: '理智值低於 20 仍成功擊敗魔物並存活', badge: '心靈無畏' }
+      { id: 'first_blood', name: '符文初醒', desc: '完成第一次正確字彙答對', badge: '勇者之印' },
+      { id: 'stage_1_clear', name: '首戰告捷', desc: '成功突破第 1 關並取得星級評價', badge: '啟程者' },
+      { id: 'ladder_3', name: '攀登者', desc: '任一單字推升至記憶階梯 3', badge: '階梯漫步者' },
+      { id: 'ladder_5', name: '永恆之主', desc: '任一單字登頂階梯 5 永恆精通', badge: '詞彙暴君' }
     ];
 
     const tbody = document.getElementById('achievementsTableBody');
     tbody.innerHTML = '';
-
     achievementsList.forEach(ach => {
-      const unlocked = !!this.user.achievements[ach.id];
+      const unlocked = (ach.id === 'stage_1_clear' && this.user.unlockedStage > 1) || !!this.user.achievements[ach.id];
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong style="color:${unlocked?'var(--gold)':'#9ca3af'};">${ach.name}</strong><div style="font-size:0.75rem; color:#9ca3af;">稱號：${ach.badge}</div></td>
@@ -1861,17 +2054,7 @@ class VocabGame {
       `;
       tbody.appendChild(tr);
     });
-
     this.openModal('achievements');
-  }
-
-  checkAchievement(achId) {
-    if (!this.user.achievements[achId]) {
-      this.user.achievements[achId] = true;
-      this.saveUser();
-      this.sound.play('master');
-      this.log(`🏆 達成成就！【${achId}】已成功解鎖！`, 'log-gold');
-    }
   }
 
   log(msg, className = '') {
@@ -1883,7 +2066,6 @@ class VocabGame {
   }
 }
 
-// 頁面載入後立即初始化
 window.addEventListener('DOMContentLoaded', () => {
   window.gameInstance = new VocabGame();
 });
